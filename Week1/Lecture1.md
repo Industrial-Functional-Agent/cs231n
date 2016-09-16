@@ -30,3 +30,13 @@ Computer vision이 다시 AI가 중요해진 이유.
 
 Benchmark가 필요하다!(Standard image set이 필요하다?) IMAGENET
 2012년 Imagenet에서 CNN이 다 강간했다. 그러나 그 아이디어는 70~80년대에 나왔던 것이다. This is beginning of deep learning
+
+cs231n foucses on one of the most important problems of visual recognition - image classification
+
+여러 문제들에 대한 flavor들을 알려줄 것이다.
+cnn is not invented overnight
+capcity of network?
+
+많은 데이터는 그자체로 overfitting을 피하게 해준다.
+
+image classification이 다가 아니다. 나아갈게 많다. ㅎㅎ... 

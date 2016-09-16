@@ -1,4 +1,8 @@
 # Lecture 2: Image Classification pipeline
+[python/numpy tutorial](http://cs231n.github.io/python-numpy-tutorial/)
+[image classificatoin notes](http://cs231n.github.io/classification/)
+[linear classification notes](http://cs231n.github.io/linear-classify/)
+
 숙제나왔습니다~  
 Image Classification: a core task in Computer Vision.
 Image classification을 할 줄 알면, 그 위에 조금만 쌓으면, object detection, segmentation 등등 여러가지를 할 수 있다.
@@ -33,4 +37,13 @@ Neural Network는 반대이다.
 
 The choice of distance is a **hyperparameter** common choices:
 
-knn하면  boundary가 smooth된다.
+knn하면  boundary가 smooth된다. choice of k is hyperparameter
+
+1nn은 training data에 대해서 100% accuracy를 보이지만
+knn은 training data에 대해서 100% accuracy가 아니다. 다른것들이 overwhelm할 수 있기 때문
+
+i.e. how do we set the **hyperparameters**?
+Very problem-dependent  
+Must try them all out and see what works best.
+
+train data중에서 test data를 뽑아서 여러 hyperparameter로 뽑아서 해보고 가장 잘되는 것으로 고른다. Test data는 generalization algorithm의 proxy이다. You should not trust the test data in fact. 즉 Training할 때 test data를 사용하면 안된다?(없는 것처럼 행동해라)
