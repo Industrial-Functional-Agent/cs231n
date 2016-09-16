@@ -3,12 +3,14 @@
 * **150시간** : Youtube에 1시간마다 업로드되는 동영상의 길이. 인력으로 `annotation`이나 `labeling`이 불가능한 수준에 이르렀다. 
 * **결론** : `vision technology` 가 이렇게나 중요하다.
 * **cs231n?** : `CNN`(Convolutional Neural Network)라는 도구로 `image classification`이라는 문제를 해결하는 것에 집중할 것이다.
+
 # Historical Context
 * 수강생의 **primary goal**은 **deep learning**일 것이다.
 * 하지만 **problem domain**을 이해하지 않고는 **next model**의 **inventor**가 될 수 없다.
 * 그리고 deep learning, 특히 **cnn**은 **vision domain**의 문제를 해결하기 위해 만들어졌다.
 * **general problem domain**과 **tool** 사이는 절대 **de-coupling**되지 않는다.
 * 그러므로 **vision domain**의 **historical context**를 이해할 필요가 있다!
+
 ## Hubel & Wiesel (1959)
 * 고양이 뇌에(`primary visual cortex`로 추정되는) 전극을 꽂고 다양한 이미지를 보여주며 전기 신호를 측정했다.
 * 물고기 이미지를 보여준다고 해서 전극에 스파크가 튀는 것이 아니었다.
