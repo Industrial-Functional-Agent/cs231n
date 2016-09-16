@@ -34,6 +34,9 @@
 * **face detection**
 * **black & white feature**를 사용해서 **real-time**으로 동작했다.
 * 당시 스마트 디지털 카메라에 들어간 기술이다. 최초로 상업적으로 이용된 것.
+* 이전의 연구들은 **modeling 3D object**를 목표로 했다.
+* 이 연구를 기점으로 **recognition**으로 연구의 중심이 이동했다.
+* 그럼으로 다시 **Artifical Intelligence**의 영역으로 진입한 것이다.
 
 ## David Lowe (1999)
 * **object recognition**을 위한 새로운 **feature** 제시 : `SIFT`
@@ -62,6 +65,6 @@
 * 2012년 **IMAGENET Challenge**의 우승 모델인 **SuperVision**은, 1998년 미국 우체국의 우편 번호 해독을 위해 개발된 **LeCun**의 그것과 아키텍쳐가 유사하다.
 * 그렇지만 **2가지 큰 차이점**이 존재했다.
 	* **GPU** : NVIDIA의 큰 기여가 있었다. 98년도에 비해서, 12년도의 컴퓨팅 파워가 대략 **x1000** 수준이 되었다. 
-	* **Data** : LeCun의 모델이 기반한 **MNIST** 데이터 셋은 약 **10^7**이었지만, IMAGENET은 약 **10^14** 수준으로 비교되지 않을 정도로 컸다.
+	* **Data** : LeCun의 모델이 기반한 **MNIST** 데이터 셋은 약 **10^7**이었지만, IMAGENET은 약 **10^14** 수준으로 비교되지 않을 정도로 컸다. 
 * 그렇다면 이제 **computer vision**의 모든 문제가 해결된 것인가?
 * **그렇지 않다** : 새로운 **quest**에 마주해있다. **beyond visual recognition...**
