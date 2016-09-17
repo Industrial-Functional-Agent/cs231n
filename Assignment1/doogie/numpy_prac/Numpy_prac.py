@@ -120,3 +120,219 @@ print a
 # Boolean array indexing: Boolean array indexing lets you pick out arbitrary
 # element of an array. Frequently this type of indexing is used to select
 # the elements of an array that satisfy some condition. Here is an example:
+a = np.array([[1,2], [3,4], [5,6]])
+
+bool_idx = (a > 2)  # Find the elements of a that are bigger than 2;
+                    # this returns a numpy array of Booleans of the same
+                    # shape as a, where each slot of bool_idx tells
+                    # whether that element of a is > 2.
+
+print bool_idx
+
+# We use boolean array indexing to construct a rank 1 array
+# consisting of the elements of a corresponding to the True values
+# of bool_idx
+print a[bool_idx]
+
+# We can do all of the above in a single concise statement:
+print a[a > 2]
+
+# Datatypes
+# Every numpy array is a grid of elements of the same type.
+# Numpy provides a large set of numeric datatypes that you can
+# use to construct arrays. Numpy tries to guess a datatype when you
+# create an array, but functions that construct arrays usually
+# also include an optional argument to explicitly specify the datatype.
+# Here is an example:
+
+x = np.array([1, 2])
+print x.dtype
+
+x = np.array([1.0, 2.0])
+print x.dtype
+
+x = np.array([1, 2], dtype = np.int64)
+print x.dtype
+
+# Array math
+# Basic mathematical functions operate elementwise on arrays, and are
+# available both as operator overloads and as functions is the numpy
+# module:
+
+x = np.array([[1,2], [3,4]], dtype=np.float64)
+y = np.array([[5,6], [7,8]], dtype=np.float64)
+
+# Elementwise sum;
+print x + y
+print np.add(x, y)
+
+# Elementwise difference;
+print x - y
+print np.subtract(x, y)
+
+# Elementwise product;
+print x * y
+print np.multiply(x, y)
+
+# Elementwise division;
+print x / y
+print np.divide(x, y)
+
+# Elementwise square root;
+print np.sqrt(x)
+
+# Note that unlike MATLAB, * is elementwise multiplication, not matrix multiplication
+# We instead use the dot function to compute inner products of vectors, to multiply
+# a vector by a matrix, and to multiply matrices. dot is available both as a funtion
+# in th numpy module and as an instance method of array objects:
+
+x = np.array([[1,2], [3,4]])
+y = np.array([[5,6], [7,8]])
+
+v = np.array([9, 10])
+w = np.array([11, 12])
+
+# Inner product of vectors
+print v.dot(w)
+print np.dot(v, w)
+
+# Matrix / vector product;
+print x.dot(v)
+print np.dot(x, v)
+print np.dot(v, x)
+
+# Matrix / matrix product
+print x.dot(y)
+print np.dot(x, y)
+
+# Numpy provides many useful functions for performing computations on arrays;
+# one of the most useful is sum:
+
+x = np.array([[1,2], [3,4]])
+
+print np.sum(x)
+print np.sum(x, axis=0)
+print np.sum(x, axis=1)
+
+# Apart from computing mathematical functions using arrays, we frequently
+# need to reshape or otherwise manipulate data in arrays.
+# The simplest example of this type of operation is transposing a matrix;
+# to transpose a matrix, simply use the T attribute of an object:
+
+x = np.array([[1,2], [3,4]])
+print x
+print x.T
+
+# Note that taking the transpose of a rank 1 array does nothing:
+v = np.array([1,2,3])
+print v
+print v.T
+
+# Broadcasting
+# Broadcasting is a powerful mechanism that allows numpy to work with
+# arrays of different shapes when performing arithmetic operations.
+# Frequently we have a smaller array and a larger array, and we
+# want to use the smaller array multiple times to perform some
+# operation on the larger array.
+
+# For example, suppose that we want to add a constant vector to
+# each row of a matrix. We could do it like this:
+
+# We will add the vector v to each row of the matrix x,
+# storing the result in the matrix y
+x = np.array([[1,2,3], [4,5,6], [7,8,9], [10,11,12]])
+v = np.array([1, 0, 1])
+y = np.empty_like(x) # Create an empty matrix with the same shape as x
+
+# Add the vector v to each row of the matrix x with an explicit loop
+for i in range(4):
+    y[i, :] = x[i, :] + v
+
+print y
+
+# This works; however when the matrix is very large, computing
+# an explicit loop in Python could be slow. Note that adding the
+# vector v to each row of the matrix x is equivalent to forming a matrix
+# vv by stacking multiple copies of v vertically, then performing elementwise
+# summation of x and vv. We could implement this approach like this:
+
+# We will add the vector v to each row of the matrix x,
+# storing the result in the matrix y
+x = np.array([[1,2,3], [4,5,6], [7,8,9], [10,11,12]])
+v = np.array([1, 0, 1])
+vv = np.tile(v, (4, 1))
+print vv
+
+y = x + vv
+print y
+
+# Numpy broadcasting allows us to perform this computation
+# without actually creating multiple copies of v.
+# Consider this version, using broadcasting:
+
+# We will add the vector v to each row of the matrix x,
+# storing the result in matrix y
+x = np.array([[1,2,3], [4,5,6], [7,8,9], [10,11,12]])
+v = np.array([1,0,1])
+y = x + v
+print y
+
+# This line y = x + v works even though x has shape (4, 3) and v shape (3, ) due
+# to broadcasting: this line works as if v actually had shape (4, 3), where each row
+# was a copy of v, and the sum was performed elementwise.
+
+# Broadcasting two arrays together follows these rules:
+#   1. If the arrays do not have the same rank, prepend the shape of the lower rank
+#       with 1s until both shapes have the same length.
+#   2. The two arrays are said to be compatible ina dimension if they have the same size
+#       in the dimension, or if one of the arrays has size 1 in the dimension.
+#   3. The arrays can be broadcast together if they are compatible in all dimensions.
+#   4. After broadcasting, each array behaves as if it had shape equal to the
+#       elementwise maximum of shapes of the two input arrays.
+#   5. In any dimension where one array had size 1 and the other array had size greater
+#       than 1, the first array behaves as if it were copied along that dimension
+
+# Here are some applications of broadcasting:
+
+# Compute outer product of vectors
+v = np.array([1,2,3])
+w = np.array([4,5])
+# To compute an outer product, we first reshape v to be a column
+# vector of shape (3, 1); we can then broadcast it against w to yield
+# an output of shape (3, 2), which is the outer product of v and w:
+# [[4 5]
+#  [8 10]
+#  [12 15]
+print np.reshape(v, (3, 1)) * w
+
+# Add a vector to each row of a matrix
+x = np.array([[1,2,3], [4,5,6]])
+# x has shape (2, 3) and v has shape (3,) so they broadcast to (2, 3),
+# giving the following matrix:
+# [[2 4 6]
+#  [5 7 9]]
+print x + v
+
+# Add a vector to each column of a matrix
+# x has shape (2, 3) and w has shape (2,).
+# If we transpose x then it has shape (3, 2) and can be broadcast
+# against w to yield a result of shape (3, 2) which is the matrix x with
+# the vector w added to each column. Gives the following matrix:
+# [[5 6 7]
+#  [9 10 11]]
+print (x.T + w).T
+# Another solution is to reshape w to be a row vector of shape (2,1);
+# we can then broadcast it directly against x to produce the same output.
+print x + np.reshape(w, (2, 1))
+print x +w.reshape(2, 1)
+
+# Multiply a matrix by a constant:
+# x has shape (2, 3). Numpy treats scalars as arrays of shape ();
+# these can be broadcast together to shape (2, 3), producing the
+# following array:
+# [[2 4 6]
+#  [8 10 12]]
+print x * 2
+
+# Broadcasting typically makes your code more concise and faster,
+# so you should strive to use it where possible.
