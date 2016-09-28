@@ -131,7 +131,7 @@ plt.title('Cosine')
 # Here is an example:
 
 img = imread('assets/cat.jpg')
-img_tinted = img * [1, 0., 0.9]
+img_tinted = img * [1.5, 1.5, 1.5]
 
 # Show the original image
 plt.figure(4)
