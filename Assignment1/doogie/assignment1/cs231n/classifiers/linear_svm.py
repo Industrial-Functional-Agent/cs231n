@@ -28,7 +28,6 @@ def svm_loss_naive(W, X, y, reg):
   for i in xrange(num_train):
     scores = X[i].dot(W)
     correct_class_score = scores[y[i]]
-    cnt = 0
     for j in xrange(num_classes):
       if j == y[i]:
         continue
