@@ -34,13 +34,17 @@ def svm_loss_naive(W, X, y, reg):
       margin = scores[j] - correct_class_score + 1 # note delta = 1
       if margin > 0:
         loss += margin
+        dW[:, j] += X[i]
+        dW[:, y[i]] -= X[i]
 
   # Right now the loss is a sum over all training examples, but we want it
   # to be an average instead so we divide by num_train.
   loss /= num_train
+  dW /= num_train
 
   # Add regularization to the loss.
   loss += 0.5 * reg * np.sum(W * W)
+  dW += reg * W
 
   #############################################################################
   # TODO:                                                                     #
@@ -69,7 +73,15 @@ def svm_loss_vectorized(W, X, y, reg):
   # Implement a vectorized version of the structured SVM loss, storing the    #
   # result in loss.                                                           #
   #############################################################################
-  pass
+  scores = X.dot(W)
+  correct_class_scores = np.array([scores[range(y.shape[0]), y]]).T
+  scores += -correct_class_scores + 1
+  scores = np.maximum(0, scores)
+  loss = np.sum(scores)
+  # consider summing up correct class's score too
+  loss -= X.shape[0]
+  loss /= X.shape[0]
+  
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -84,7 +96,16 @@ def svm_loss_vectorized(W, X, y, reg):
   # to reuse some of the intermediate values that you used to compute the     #
   # loss.                                                                     #
   #############################################################################
-  pass
+  N_dim = X.shape[0]
+  D_dim = X.shape[1]
+  C_dim = W.shape[1]
+  dW += X.T.dot(scores > 0)
+  label = np.zeros([N_dim, C_dim])
+  label[range(N_dim), y] = 1
+  temp = (np.sum(scores > 0, axis=1).reshape(N_dim, 1) * X).T
+  dW -= temp.dot(label)
+  dW /= N_dim
+  dW += reg * W
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
