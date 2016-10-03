@@ -1,6 +1,11 @@
 # Backpropagation, Nerual Networks 1
 
-Lecutre노트를 모두 다 읽어라,
+## Computational Graph
+Instead of one giant expression, we can visualize our complex computation using **computational graph**. Computaional graph is composed of many kinds of **computational gate** which accepts inputs, then compute, and deliver it to next gate.
+Using this concept, we can represent neural networks as computational graph.  
+
+
+Lecutre노트를 모두 다 읽어라,k
 
  그래디언트 디센트
  * Numerical Gradient: slow (why? w vector size is same with feature vector size. in convnet feature vector size is approximately million. So for one step update w, we neet do calculate gradient million times.) But it is easy to write.
