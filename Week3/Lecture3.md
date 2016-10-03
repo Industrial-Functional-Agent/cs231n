@@ -1,40 +1,87 @@
 # Linear Classification 2, Optimization
 
-## ToDo:
-1. Define a **loss function** that quantifies our unhappiness with the scores across the training data.
-2. Come up with a way of efficiently finding the parameters that minimize the loss function. **(optimization)**
+## Loss function
+Loss function is a function that quantifies our unhappiness with the scores across the training data.
+### Multiclass SVM loss:
+```python
+def L_i_vectroized(x, y, W)
+	scores = W.dot(x)
+	margins = np.maximum(0, scores - scores[y] + 1)
+	margins[y] = 0
+	loss_i = np.sum(margins)
+	return loss_i
+```
 
-## Multiclass SVM loss:
-Here is a problem for us. We can write math equation...
-What can we do?
++1 is a safety margin = not a hyperparameter.
 
-+1 is a safety margin = not a hyperparameter
+#### Q1: What if we used a L2 loss?
+* The choice of selections is another hyperparameter.
+* The optimized W will be different.
 
-## Q1: What if the sum was instead over all classes? (including j = y_i)
-* Answer: 모든 Loss에 1씩 추가 될 것이므로, 전체 적인 로스가 증가 할 것이다. 그러나 Optimal W는 동일
+#### Q2: Usually at initialization W are small numbers, so all s ~= 0. What is the loss?
+* The loss is **number of class - 1**.
+* Check point for initial learning step.
 
-## Q2: What if we used a mean instead of a sum here?
-* Answer: 전체적인  Loss는 감소하지만, optimization입장에서는 큰 차이 없을 것이다.
+Unfotunately, there is a **bug** in above code. The optimal W is not unique. (What if we multiply **alpha > 1** to optimal W?) Because in above code, we search the optimal W in whole space of W. So we wish to encode some preference for a certain set of weights W over others to remove this ambiguity. 
 
-## Q3: L2 Loss를 쓴다면?
-* Answer: Different W를 얻는다. scailing할때 constant만큼 scaling되지도, shifting되지도 않았다. 로스가 큰놈은 훨씬더 로스가 크게 된다. 로스가 큰 애들에게 민감하게 optimization될 것 이다.
+### Regularization
+What is a regularization? It is a representation of preference. And there are many kinds of preferences.
 
-## Q4: What is the min/max possible loss?
-* Answer: min = 0, max = infinite
+* L2
+* L1
+* Elastic(L1 + L2)
+* Max norm
+* Dropout
 
-## Q5: Usually at initialization W are small numbers, so all s ~= 0. What is the loss?
-* Answer: number of classes - 1 => sanity check
-	* 만약 W를 적게 해서 첫번째 loss를 구했다면 number of classes - 1정도가 나와야 한다.
+For example, L2 normalization prefers the distributed weights to skewed. Diffuese weights are good in somecase. Because the result is affected by **all features**. Let's assume that there are two weights which result in same loss.
 
-## Suppose that we found a W such that L = 0. Is this W unique?
-* Answer: No, We must regularize the W: entire subspace of W
+1. [1, 0, 0, 0]
+2. [0.25, 0.25, 0.25, 0.25]
 
-## Weight Regularization
-lambda = regularization strength(hyperparameter)
+L2 normalization favor the second one. 
 
-## L2 regularization
-* reason = spread out w as much as possible that you're taking into account all the input features. Since the L2 penalty prefers smaller and more diffuse weight vectors, the final classifier is encouraged to take into account all input dimensions to small amounts rather than a few input dimensions and very strongly.
+### Softmax loss (Multinomial Logistic Regression):
+In softmax loss, scores are normalized log proboblities of the classes. We want to maximize the log likelihood, or (for a loss function) to minimize the negative log likelihood of the correct class.
 
-## Softmax Classifier(Multinomial Logistic Regression)
-### Q: What is the min/max possible loss L_i?
-* Answer 0 and infinite	
+### Softmax vs. SVM
+In practically the results W of two loss functions are usually comparable. 
+
+*  Jiggle the data a bit (changing its score slightly). What happens to the loss in both cases? 
+	* Softmax: The loss will change slightly.
+	* SVM: The loss will not change. Because SVM has a robustness due to the margin +1.
+
+## Optimization
+Optimization is finding parameters that minimize the loss function. (efficiently)
+
+### Gradient descent
+```python
+while(true)
+	weights_grad = evaluate_gradient(loss_fun, data, wegihts)
+	weights += -step_size * weights_grad # Perform parameter update
+```
+
+* numerical
+	* easy to write
+	* slow
+	* very slow to evaluate
+
+* analytic
+	* fast
+	* error prone
+	* exact 	
+
+In practice, we always use analytic gradient, but check implementation with numerical gradient. This is called a **gradient check**.
+
+#### Mini-batch Gradient descent
+* only use small portion of the training set to compute the gradient.
+
+```python
+while True:
+	data_batch = sample_traging_data(data, 256) # samples 256 samples
+	weights_grad = evaluate_gradient(loss_fun, data_batch, weigths)
+	weights += -step_size * weights_grad # perform parameter update
+```
+
+Common minibatch sizes are 32/64/128 examples.
+
+Before 2012, we did feature extraction hardly. But now, the neural network does it for us.
