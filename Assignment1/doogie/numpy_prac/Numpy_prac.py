@@ -33,7 +33,7 @@ print c
 d = np.eye(2)
 print d
 
-e = np.random.random((2,2)) # Create an array filled with random valuesR
+e = np.random.random((2,3)) # Create an array filled with random valuesR
 print e
 
 # Array indexing
