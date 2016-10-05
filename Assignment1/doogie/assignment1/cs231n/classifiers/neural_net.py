@@ -74,7 +74,15 @@ class TwoLayerNet(object):
     # Store the result in the scores variable, which should be an array of      #
     # shape (N, C).                                                             #
     #############################################################################
-    pass
+    augX = np.hstack((X, np.ones((X.shape[0], 1)))) # (N, D + 1)
+    augW1 = np.vstack((W1, b1)) # (D + 1, H)
+    hidden_state = augX.dot(augW1) # (N, H)
+    # ReLU
+    bit_idx = (hidden_state > 0).astype(int)
+    hidden_state *= bit_idx
+    aug_hidden_state = np.hstack((hidden_state, np.ones((hidden_state.shape[0], 1)))) # (N, H + 1)
+    augW2 = np.vstack((W2, b2)) # (H + 1, C)
+    scores = aug_hidden_state.dot(augW2) # (N, C)
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -92,7 +100,15 @@ class TwoLayerNet(object):
     # classifier loss. So that your results match ours, multiply the            #
     # regularization loss by 0.5                                                #
     #############################################################################
-    pass
+    H, C = W2.shape
+    exp_scores = np.exp(scores) # (N, C)
+    correct_class_score = exp_scores[np.arange(N), y]
+    class_score_sum = np.sum(exp_scores, axis=1)
+    normalized_probability = correct_class_score / class_score_sum
+    normalized_log_probability = -np.log(normalized_probability)
+    loss = np.sum(normalized_log_probability)
+    loss /= N
+    loss += 0.5 * reg * np.sum(W1 * W1) + 0.5 * reg * np.sum(W2 * W2)
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -103,8 +119,25 @@ class TwoLayerNet(object):
     # TODO: Compute the backward pass, computing the derivatives of the weights #
     # and biases. Store the results in the grads dictionary. For example,       #
     # grads['W1'] should store the gradient on W1, and be a matrix of same size #
-    #############################################################################
-    pass
+    ############################################################################# 
+    dinv = 1 / class_score_sum
+    dexp = exp_scores * dinv.reshape(N, 1) # (N, C)
+    dcorrect = np.zeros((N, C)) # (N, C)
+    dcorrect[np.arange(N), y] = -1
+    dexp += dcorrect
+    dW2 = aug_hidden_state.T.dot(dexp) # (N, H + 1).T * (N, C)
+    dW2 /= N
+    dW2 += reg * augW2 # (H + 1, C)
+    grads['W2'] = dW2[:-1, :] # (H, C)
+    grads['b2'] = dW2[-1:, :]
+    
+    dhidden = dexp.dot(augW2.T)[:, :-1] # (N, C) * (H, C).T
+    dReLU = bit_idx * dhidden # (N, H)
+    dW1 = augX.T.dot(dReLU) # (N, D + 1).T * (N, H)
+    dW1 /= N
+    dW1 += reg * augW1 # (D + 1, H)
+    grads['W1'] = dW1[:-1, :] # (D, H)
+    grads['b1'] = dW1[-1:, :]
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -148,7 +181,9 @@ class TwoLayerNet(object):
       # TODO: Create a random minibatch of training data and labels, storing  #
       # them in X_batch and y_batch respectively.                             #
       #########################################################################
-      pass
+      indices = np.random.choice(num_train, batch_size)
+      X_batch = X[indices]
+      y_batch = y[indices]
       #########################################################################
       #                             END OF YOUR CODE                          #
       #########################################################################
@@ -163,7 +198,10 @@ class TwoLayerNet(object):
       # using stochastic gradient descent. You'll need to use the gradients   #
       # stored in the grads dictionary defined above.                         #
       #########################################################################
-      pass
+      self.params['W1'] -= learning_rate * grads['W1']
+      self.params['b1'] -= learning_rate * grads['b1'][0]
+      self.params['W2'] -= learning_rate * grads['W2']
+      self.params['b2'] -= learning_rate * grads['b2'][0]
       #########################################################################
       #                             END OF YOUR CODE                          #
       #########################################################################
@@ -208,7 +246,16 @@ class TwoLayerNet(object):
     ###########################################################################
     # TODO: Implement this function; it should be VERY simple!                #
     ###########################################################################
-    pass
+    augX = np.hstack((X, np.ones((X.shape[0], 1)))) # (N, D + 1)
+    augW1 = np.vstack((self.params['W1'], self.params['b1'])) # (D + 1, H)
+    hidden_state = augX.dot(augW1) # (N, H)
+    # ReLU
+    bit_idx = (hidden_state > 0).astype(int)
+    hidden_state *= bit_idx
+    aug_hidden_state = np.hstack((hidden_state, np.ones((hidden_state.shape[0], 1)))) # (N, H + 1)
+    augW2 = np.vstack((self.params['W2'], self.params['b2'])) # (H + 1, C)
+    scores = aug_hidden_state.dot(augW2) # (N, C)
+    y_pred = scores.argmax(axis=1)
     ###########################################################################
     #                              END OF YOUR CODE                           #
     ###########################################################################

@@ -17,8 +17,10 @@ b = np.array([[1,2,3],[4,5,6]])   # Create a rank 2 array
 print b.shape                     # Prints "(2, 3)"
 print b[0, 0], b[0, 1], b[1, 0]   # Prints "1 2 4"
 print b
-
+print np.argsort(b, axis=-1, kind='quicksort', order=None)
+print np.argsort(b[0, :], axis=0, kind='quicksort', order=None) < 2
 # Numpy also provides many functions to create arrays:
+np.argmax(a)
 
 a = np.zeros((2,2))
 print a
@@ -31,7 +33,7 @@ print c
 d = np.eye(2)
 print d
 
-e = np.random.random((2,2)) # Create an array filled with random valuesR
+e = np.random.random((2,3)) # Create an array filled with random valuesR
 print e
 
 # Array indexing
