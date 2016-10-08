@@ -106,7 +106,7 @@ But in ReLU activation, it statistically cut half of it's input, so variance hal
 W = np.random.randn(fan_in, fan_out) / np.sqrt(fan_in/2)
 ```
 ## Batch Normalization
-It's good to make inputs of activation be normalized (unit gaussian), because constraint in input acts as a form of **regularization**. Therefore we insert **batch normalization layer** between fully connected part and activation part for each layers in network. 
+It's good to make inputs of activation be normalized (unit gaussian), because constraint in input acts as a form of **regularization**. Therefore we insert **batch normalization layer** between fully connected part and activation part for each layers in network. Several advantages followed after batch normalization. 
 ```python
 ...
 # Assume two layer neural net
@@ -134,4 +134,8 @@ def loss(self, X_mini, y):
 	# get loss
 	scores = hidden_state.dot(W2)
 	loss = softmax(scores, y)
-```  
+```
+**Gradient flow.** Batch normalization spread input datas before activation. So it makes gradient of activation more meaningful. Therefore, gradient flow through network is enhanced.
+**Learning rate.** As batch normalization normalize each layer's input to activation function, it preserves the gradient magnitudes during backpropagation. So, even though we choose higher learning rates, batch normalization prevents explosion of our model.
+**Dependence on initialization.** When we talked about weight initialization, we focused on way to maintain activations' distribution of each layers. Batch normalization explictly try to maintain inputs to activation in unit gaussian. Therefore, we can reduce dependency on initialization.
+   
