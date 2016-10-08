@@ -1,5 +1,5 @@
 ## Convolution Layer
-The convolution layer is a basic building block of CNN. Convolution layer has small filters that are parameters. It takes input image, convolves that image with each filters, stack them, and finally makes new output image, which called **activation map**.
+The convolution layer is a basic building block of CNN. Convolution layer has small filters that are parameters. It takes input image, convolves that image with each filters (which called **activation map**), stack them, and finally makes new output image.
 
 ### Example
 Let's deal with **CIFAR-10** image as example, which we used in assignment 1. Each CIFAR-10 image has **32 x 32** width and height, and **3** channels in depth for representing RGB. Totally it is a **32 x 32 x 3** tensor. And assume that we have **5 filters** with **5 x 5** size.
