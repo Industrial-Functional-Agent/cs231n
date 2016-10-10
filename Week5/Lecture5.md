@@ -138,4 +138,30 @@ def loss(self, X_mini, y):
 **Gradient flow.** Batch normalization spread input datas before activation. So it makes gradient of activation more meaningful. Therefore, gradient flow through network is enhanced.
 **Learning rate.** As batch normalization normalize each layer's input to activation function, it preserves the gradient magnitudes during backpropagation. So, even though we choose higher learning rates, batch normalization prevents explosion of our model.
 **Dependence on initialization.** When we talked about weight initialization, we focused on way to maintain activations' distribution of each layers. Batch normalization explictly try to maintain inputs to activation in unit gaussian. Therefore, we can reduce dependency on initialization.
-   
+**Act as a regularization.** In (pure) mini-batch optimization, each loss term only depends on single traning example during summation. But if we adapt batch normalization, each loss term depends on whole mini-batch training example by normalization process.
+### Note
+**Test time.** In test time, we want deterministic batch-normalization layers. We have two methods. One is computing trainging data set's average and std after training finished. The other is estimating running average and std during traing process. Then we use those average and std in test time.  
+
+## Babysitting the learning process
+After preprocessing data and choosing network architecture, it is better to take **sanity checking** process.
+* Without regularization, assuming softmax classifier and near-zero weight initialization, first value of loss should close to `ln(# of classes)`. It can be our first checkpoint.
+* With regularization, first value of loss should increase.
+* With small amount of training set, your network is possible to overfitting those datas. We can check overfitting when training accuracy approaches 100%.
+* If loss function decreases too slowly, increase learning rate then check whether loss function decreases faster.
+* With very high learning rate, loss should explode.
+
+## Hyperparameter optimization
+* For double-type hyperparameters, optimize in log space.
+* Start cross validation with coarse range, choose candidates, then proceed with fine range.
+* If you have multiple hyperparameters, do not use grid layout. Optimal point can be placed between grids. 
+* If your optimal point place in edges of interval, do not stop and search aside.
+* If your training accuracy and validation accuracy differ too much, it means your network is overfitting traing data. So increase your regularization force or decrease your model capacity.
+* Tracking the weight update to weight magnitude ratio. Somewhere around 0.001 is recommended. 
+
+## Summary
+**activation functions.** use ReLU
+**data preprocessing.** subtract mean image.
+**weight initialization.** use Xavier initialization.
+**batch normalization.** use it!
+**babysittig the learning process.** do it!
+**hyperparameter optimization.** random sample hyperparameters in log space when appropriate.
