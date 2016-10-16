@@ -1,52 +1,60 @@
 # Backpropagation, Nerual Networks 1
+## Gradient
+In lecture 3, we talked about optimization. To opitmiaze parameters, we need (analytic) **gradient** of loss function. In neural network we used **computational graph** instead of one giant expression to compute gradient.
 
-Lecutre노트를 모두 다 읽어라,
+## Computational Graph
+Computaional graph is composed of many kinds of **computational gate** which should provide **forward** and **backward** API. 
+- **forward** : take inputs, compute output, then pass it to latter node.
+- **backward** : take **global gradients** of latter node, compute global gradients of current node, then pass it to former node. 
 
- 그래디언트 디센트
- * Numerical Gradient: slow (why? w vector size is same with feature vector size. in convnet feature vector size is approximately million. So for one step update w, we neet do calculate gradient million times.) But it is easy to write.
- * Analytic gradient: fast (why? just some math equation? Actually, i don't get it why this analytic gradient is fast.), exact, but error-prone
- 
- In practice: use analytic gradient, check your implementation by using numerical gradient
- 
-computational graph
-if i increase z amount of h, then f increase 3 * h 
-chain rule!
+Here is a example code of computation gate, multiply gate.
+```python
+class MultiplyGate(object):
+	def forward(x, y):
+		z = x*y
+		return z
+	def backward(dz):
+		dx = y*dz
+		dy = x*dz
+		return [dx, dy]
+```
 
-포워드나 백워드나 시간이 비슷하다?
-backward is slightly slower
+## Backpropagation
+In optimization process, our goal find optimial parameters minimizing loss function. When we use gradient descent technique in optimization, in each step, we need gradients of loss function. If we have **analytic expression** of loss function for parameters, we can compute gradients directly, but it's inefficient and complex. 
+In computational graph, we have alternative called **backpropagation**, which compute gradients step by step. Each step takes global gradients of latter layer, chaining local gradients, then finally get global gradients of current layer. 
 
-if we use sigmoid function(gate) and it's derivative, we can express more shortly. => it it more easy to compute?
+For effciency, we compute and save **local gradients** of each computational node in forward path. Then we can use in backward path.
 
-add gate: gradient distributor
-max gate: gradient router -> smaller one doesn't effect the loss so the backword flow only propagates to larger one
-mul gate: gradient "switcher"? not good.
+## Vectorized operations
+In practice, we deal with **computational layer** composed of many nodes to take advantage of vectorized operation in GPU. Here is example of vectorized operation (dot product). Latter one is much faster than former one.
+```python
+v1 = np.random.random((1, N))
+v2 = np.random.random((1, N))
+dot = np.zeros((1,N))
 
-Gradients add at branches
+# dot product with iteration
+for i in xrange(N):
+	dot[i] = v1[i] * v2[i]
 
-There are never be loop
+# dot product with vectorized operation
+dot[:] = v1.dot(v2)
+```
+Therefore, input/output are no longer scalars, they are tensors. So local gradients are also (**Jacobian**) tensors. Theoretically, local gradient tensor's size is a combination of input tensor's size and output tensor's size. We can reduce it using some intuition. For example, in **max gate** local gradient tensor is actually diagonal, so we can store diagonal tensor instead of entire tensor.
 
-implementation: cache the data
+## Lego block
+In practice, we don't build entire neural network from scracth. Instead, our library (TensorFlow, Torch, Caffe, etc) provides many kinds of **unit layer**, then we build our network by **stacking** those unit layers in proper order, similar to lego block.
 
-layers = building block 
-library is whole set of gate
+## Neural Network
+Neural network is a computational graph which resemble human brain. Each neuron is connected with other neurons with **synapse**. A neuron takes other neuron's impulse from dendrites, compute its **activation** in cell body, pass it through axon to other neurons. So neural network is stacked by many layers of neurons.
 
-every step: forward backward update
+To abstract human neuron, we simplify **tick** in two steps, **weighted sum** and **activation**.
 
-you don't actually need to ever form those jacobians
+![abstract human neuron](http://cs231n.github.io/assets/nn1/neuron_model.jpeg)
 
-max function's Jacobian is diagonal, and it's element almost zero
-
-Neural Networks
-more compley f = W2max(0,W1x)
-
-have template of all car
-
-if h has less than 10 units, would be inferior to linear classifier?
-
-size of hidden layer = hypermarameter
-
-single neuron = linear classifier
-
-first layer가 공간을 비틀고 second layer가 리니얼리 클래시파이 한다. => 커널 트릭?
-
-wide/deep ?
+```python
+class Neuron:
+	def neuron_tick(inputs):
+		cell_body_sum = np.sum(inputs * self.weights) + self.bias
+		firing_rate = 1.0/(1.0 + math.exp(-cell_body_sum))
+		return firing_rate
+```
