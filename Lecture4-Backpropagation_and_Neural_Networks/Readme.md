@@ -8,6 +8,7 @@ Computaional graph is composed of many kinds of **computational gate** which sho
 - **backward** : take **global gradients** of latter node, compute global gradients of current node, then pass it to former node. 
 
 Here is a example code of computation gate, multiply gate.
+
 ```python
 class MultiplyGate(object):
 	def forward(x, y):
@@ -27,6 +28,7 @@ For effciency, we compute and save **local gradients** of each computational nod
 
 ## Vectorized operations
 In practice, we deal with **computational layer** composed of many nodes to take advantage of vectorized operation in GPU. Here is example of vectorized operation (dot product). Latter one is much faster than former one.
+
 ```python
 v1 = np.random.random((1, N))
 v2 = np.random.random((1, N))

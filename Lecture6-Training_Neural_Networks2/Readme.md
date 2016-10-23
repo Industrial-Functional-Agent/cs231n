@@ -16,6 +16,7 @@ while True:
 	dx = network.backword()
 	x += - learning_rate * dx
 ```
+
 #### Why SGD is so slow?
 Suppose loss function is steep vertically but shallow horizontally.
 ##### Q: What is the trajectory along which we converge towards the minimum with SGD?
@@ -27,6 +28,7 @@ Very slow progess along flat direction, jitter along steep one. Way too fast ver
 v = mu * v - learning_rate * dx # integrate velocity
 x += v # integrate position
 ```
+
 Loss function is a potential energy. The applying force to object is parallel to gradient of potential energy. The acceleration of object is sum of **friction** and **applied force**. Parameter updates with this acceleration. That is **momentum update**. 
 
 * Physical interpretation as ball rolling down the loss function + friction(mu coefficient).
@@ -39,12 +41,14 @@ Loss function is a potential energy. The applying force to object is parallel to
 Even though momentum update overshoot the target, overall getting to the minimum is much faster.
 
 ### Nesterov Momentum Update
-Compare to momentum update, Nesterov momentum update calculate gradients after updating parameter by amount of `mu * v`, which is called **lookahead gradient step**. It converges faster theoretically, also practically.  
+Compare to momentum update, Nesterov momentum update calculate gradients after updating parameter by amount of `mu * v`, which is called **lookahead gradient step**. It converges faster theoretically, also practically.
+  
 ```python
 # Neterov Momentum update
 v = mu * v - epsilon * gradient(x + mu * v)
 x += v 
 ```
+
 Slightly inconvenient.
 
 ```python
@@ -58,11 +62,13 @@ Local minimum is not issue. There is no bad local minima in big neural network.
 
 ### AdaGrad update
 It is primarily introduced in convex optimization domain.
+
 ```python
 # Adagrad update
-cache += dx**2 # second moment
+cache += dx ** 2 # second moment
 x += - learning_rate * dx / (np.sqrt(cache) + 1e-7)
 ```
+
 * Added element-wise scaling of the gradient based on the historical sum of squared in each 
 * In steep direction, the larger number is divided, so the update will be small.
 * In shallow direction, the smaller number is divided, so the update will be large.
@@ -76,16 +82,19 @@ As cache monotonically increase, effective learning rate monotonically decrease.
 
 ### RMSProp update 
 It solves the problem of AdaGrad update. It is primarily introduced in a slide in **Geoff Hinton**'s Coursera course. It combines Adagrad update with concept of momentum update.
+
 ```python
 # RMSProp
-cahce = decay_rate * cache + (1 - decay_rate) * dx**2
-x += learning_rate * dx / (np.sqrt(cache) + 1e-7)
+cahce = decay_rate * cache + (1 - decay_rate) * (dx ** 2)
+x += -learning_rate * dx / (np.sqrt(cache) + 1e-7)
 ```
+
 #### Adagrad vs RMSProp
 Adagrad is faster than RMSProp. But Adagrad converges too fast because its learning rate monotonically decreases. RMSProp converges in better point.
  
 ### Adam update
 Adam update is most popular update rule. 
+
 ```python
 # Adam
 dx = # ... evaluate gradient
@@ -93,8 +102,9 @@ m = beta1*m + (1-beta1)*dx # update first momentum
 v = beta2*v + (1-beta2)*(dx**2) # update second momentum
 mb = m/(1-beta1**t) # bias correction
 vb = v/(1-beta2**t) # bias correction
-x += - learning_rate * m / (np.sqrt(v) + 1e-7)
+x += -learning_rate * mb / (np.sqrt(vb) + 1e-7)
 ```
+
 * Looks a bit like RMSProp with momentum.
 * beta1 and beta2 are hyperparameter. Pracitcal value for beta1 is **0.9**, and for beta2 is **0.995**.
 * Bias correction step is for warming up `m` and `v`, to guarantee proper level of values in initial step.
@@ -111,10 +121,12 @@ In 1/t decay, learning rate is inverse propotional to number of iterations.
 All these three techniques came from domain of **convex optimization**. Even though we are in different domain, we can collaborate this learning rate decay into parameter update technique, **except Adagrad** update which embed monotonic decrease of learning rate.
 ## Second order optimization methods
 Original second order optimization method deals with **Hessian matrix**. It starts with some point, derives second-order Taylor expansion, and solve for the critical point. Then we obtain the Newton parameter update.
+
 ```python
 # derive critical point from starting point
 critical = origin - inverse(Hessian) * gradient(origin) 
-```  
+```
+  
 Its advantage is that it doesn't need learning rate. It jump to critical point directly, then find next critical point and so on. But to compute critical point, we need to calculate **inverse matrix of Hessian**, which is almost impossible in practice.
 ### Quasi-Newton methods
 #### BGFS
@@ -129,15 +141,18 @@ Basic concept of model ensemble composed of two steps. First, train **multiple**
 ### Checkpoints
 If training costs a lot, we can use checkpoints during single learning process in model ensemble. Practically, it also achieves better performance.
 ### Running Average
-This technique additionally calculate running average of parameters in training process, then use running average instead of final parameter at test time. 
+This technique additionally calculate running average of parameters in training process, then use running average instead of final parameter at test time.
+ 
 ```python
 x += - learning_rate * dx # simple SGD
 x_test = 0.995 * x_test + 0.005 * x
-```  
+```
+  
 Running average can be effective in situation like parameters rotating around exact minimum in latter part of training. Even though parameters rotating around in each iteration, their running average can direct exact point of minimum.
 
 ## Dropout
 In forward propagation, mask few randomly chosen neurons to zero.
+
 ```python
 p = 0.5 # probability of keeping a unit active. higher = less dropout
 
@@ -162,6 +177,7 @@ def predict(X):
 	H2 = np.maximum(0, np.dot(W2, H1) + b2) # NOTE: scale the activations
 	out = np.dot(W3, H2) + b3
 ```
+
 ### As model ensemble
 Dropout can be interpreted as model ensemble with shared parameters. Each binary mask corresponds to single model. But each single model is trained on only one training data.
 ### Redundant representation
@@ -170,9 +186,11 @@ Dropout can be interpreted as forcing the neural network to have a redundant rep
 ## CNN: Brief History
 ### Hubel & Wiesel (1959)
 They researched visual cortex of cat. And found out two keypoints. **First**, some neurons focus on some orientation of visual stimulus. **Second**, adjacent region in vision also activates adjacent region in visual cortex. They concluded this results in **hierarchical organization** of human vision.
+
 ```
 simple cell ---> complex cell ---> hyper-complex cell
 ```
+
 ### Fukushima (1980)
 Based on results of Hubel & Wiesel, He introduced concept of **Neurocognitron**. He construct hierarchical network with simple cells and complex cell. But he didn't adapt back propagation.
 ### LeCun et al (1998)
