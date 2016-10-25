@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b17a35b9-8257-45a3-a380-e52a56bbdf36" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../../Lecture6-Training_Neural_Networks2/Readme.md" afterPath="$PROJECT_DIR$/../../../Lecture6-Training_Neural_Networks2/Readme.md" />
     </list>
     <ignored path="numpy_prac.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -32,7 +32,7 @@
       <file leaf-file-name="Practice.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Practice.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="513">
+            <state relative-caret-position="-1161">
               <caret line="124" column="6" selection-start-line="124" selection-start-column="6" selection-end-line="124" selection-end-column="6" />
               <folding />
             </state>
@@ -42,7 +42,7 @@
       <file leaf-file-name="Numpy_prac.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Numpy_prac.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="580">
+            <state relative-caret-position="999">
               <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
               <folding />
             </state>
@@ -52,7 +52,7 @@
       <file leaf-file-name="Scipy_prac.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Scipy_prac.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="413">
+            <state relative-caret-position="3672">
               <caret line="139" column="22" selection-start-line="139" selection-start-column="22" selection-end-line="139" selection-end-column="22" />
               <folding>
                 <element signature="e#589#636#0" expanded="true" />
@@ -78,8 +78,8 @@
       <list>
         <option value="$PROJECT_DIR$/numpy_prac.py" />
         <option value="$PROJECT_DIR$/Scipy_prac.py" />
-        <option value="$PROJECT_DIR$/Practice.py" />
         <option value="$PROJECT_DIR$/Numpy_prac.py" />
+        <option value="$PROJECT_DIR$/Practice.py" />
       </list>
     </option>
   </component>
@@ -119,7 +119,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -148,6 +147,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -489,14 +489,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1680" height="963" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10866911" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10989011" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295063" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3283582" sideWeight="0.5050125" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295063" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23995407" sideWeight="0.49498746" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23995407" sideWeight="0.49498746" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295063" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -934,7 +934,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Scipy_prac.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="413">
+        <state relative-caret-position="3672">
           <caret line="139" column="22" selection-start-line="139" selection-start-column="22" selection-end-line="139" selection-end-column="22" />
           <folding>
             <element signature="e#589#636#0" expanded="true" />
@@ -944,7 +944,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Numpy_prac.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="580">
+        <state relative-caret-position="999">
           <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
           <folding />
         </state>
@@ -952,7 +952,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Practice.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
+        <state relative-caret-position="-1161">
           <caret line="124" column="6" selection-start-line="124" selection-start-column="6" selection-end-line="124" selection-end-column="6" />
           <folding />
         </state>
@@ -960,6 +960,6 @@
     </entry>
   </component>
   <component name="webServersAuthStorage">
-    <data>AAAAsOTNJzMsGPPx4fUCi+J4eBZLYr1CZd8YhaLQ/RvxGlE5kHEXEioJlqg2F8UW8CQKUg+VzdE2KXh/dF+/ZqZUgddl5y0Q+7sPeEsJrBVlLlaYsbXeCINM956HYCZomdoCbg6b7nsBnNlB0BCwZSZdrcjS8qpblD4RBNPhkA3kX2n1a3n022H3w0a+rC3N4dk4586oZ0epYgIpCa4B2BZ7uqCQt8+dsd3aSBq6NhXegnF/b+HDwG9J+GscGyyAglf03A==</data>
+    <data>AAAAsJ9xqZRu6AD1FcS4RwU7X8bl0ND15LsXIEKNsQJ7R+ZeqQq+rDwiXNjiN623SoBhjdboyrYr4F0mP4uKJ6JbR9oeHZLAJ0BUKHqPCcc0HL4JqXmPGyvUivInifBG7oNKEkhDqQ2jxWTO6fiYOI1GknfRAqaeeNr8pf4qwERz5NZX+HNBN1e/xIqf6PHksfw/+Wi47fOkl5l0q+50MEKiB5XY4buGSWS99xiS2H20yaqCIjla4W6yNvBuNXVUU0bFHg==</data>
   </component>
 </project>

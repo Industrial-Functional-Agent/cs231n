@@ -161,7 +161,7 @@ def batchnorm_forward(x, gamma, beta, bn_param):
   running_mean = bn_param.get('running_mean', np.zeros(D, dtype=x.dtype))
   running_var = bn_param.get('running_var', np.zeros(D, dtype=x.dtype))
 
-  out, cache = None, None
+  out, cache = None, {}
   if mode == 'train':
     #############################################################################
     # TODO: Implement the training-time forward pass for batch normalization.   #
@@ -176,7 +176,18 @@ def batchnorm_forward(x, gamma, beta, bn_param):
     # the momentum variable to update the running mean and running variance,    #
     # storing your result in the running_mean and running_var variables.        #
     #############################################################################
-    pass
+    sample_mean = np.mean(x, axis=0)
+    sample_var = np.var(x, axis=0)
+    norm_x = (x - sample_mean) / np.sqrt(sample_var + eps) # noramlized hidden state
+    out = norm_x * gamma + beta
+    running_mean = momentum * running_mean + (1 - momentum) * sample_mean
+    running_var = momentum * running_var + (1 - momentum) * sample_var
+    cache['gamma'] = gamma
+    cache['mean'] = sample_mean
+    cache['var'] = sample_var
+    cache['norm_x'] = norm_x
+    cache['x'] = x 
+    cache['eps'] = eps
     #############################################################################
     #                             END OF YOUR CODE                              #
     #############################################################################
@@ -187,7 +198,8 @@ def batchnorm_forward(x, gamma, beta, bn_param):
     # and shift the normalized data using gamma and beta. Store the result in   #
     # the out variable.                                                         #
     #############################################################################
-    pass
+    norm_out = (x - running_mean) / np.sqrt(running_var + eps)
+    out = norm_out * gamma + beta
     #############################################################################
     #                             END OF YOUR CODE                              #
     #############################################################################
@@ -223,7 +235,21 @@ def batchnorm_backward(dout, cache):
   # TODO: Implement the backward pass for batch normalization. Store the      #
   # results in the dx, dgamma, and dbeta variables.                           #
   #############################################################################
-  pass
+  m = dout.shape[0]  
+
+  dnorm_x = dout * cache['gamma']
+  dvar = np.sum(dnorm_x * (cache['x'] - cache['mean']), axis=0) * \
+         (-1. / 2.) * ((cache['var'] + cache['eps']) ** (-3. / 2.))
+        
+  dmean = np.sum(dnorm_x / -np.sqrt(cache['var'] + cache['eps']), axis=0) + \
+          dvar * np.sum(-2 * (cache['x'] - cache['mean']), axis=0) / m
+  
+  dx = dnorm_x / np.sqrt(cache['var'] + cache['eps']) + \
+       dvar * 2 * (cache['x'] - cache['mean']) / m + \
+       dmean / m
+  
+  dgamma = np.sum(dout * cache['norm_x'], axis=0)
+  dbeta = np.sum(dout, axis=0)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -253,7 +279,14 @@ def batchnorm_backward_alt(dout, cache):
   # should be able to compute gradients with respect to the inputs in a       #
   # single statement; our implementation fits on a single 80-character line.  #
   #############################################################################
-  pass
+  m = dout.shape[0]
+  dnorm_x = dout * cache['gamma']
+  dx = 1. / np.sqrt(cache['var'] + cache['eps']) * \
+    (-np.average(dnorm_x, axis=0) + \
+    np.average(dnorm_x * cache['norm_x'], axis=0) * -cache['norm_x'] + \
+    dnorm_x)
+  dgamma = np.sum(dout * cache['norm_x'], axis=0)
+  dbeta = np.sum(dout, axis=0)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
