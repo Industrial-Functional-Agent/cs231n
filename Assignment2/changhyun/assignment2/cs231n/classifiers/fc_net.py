@@ -271,9 +271,13 @@ class FullyConnectedNet(object):
         loss, dscores = softmax_loss(scores, y)
         w_key, b_key = 'W' + str(self.num_layers), 'b' + str(self.num_layers)
         grad_right, grads[w_key], grads[b_key] = affine_backward(dscores, last_affine_cache)
+        loss += 0.5 * self.reg * np.square(self.params[w_key]).sum()
+        grads[w_key] += self.reg * self.params[w_key]
         for i in reversed(range(1, self.num_layers)):
             w_key, b_key = 'W' + str(i), 'b' + str(i)
             grad_left, grads[w_key], grads[b_key] = affine_relu_backward(grad_right, affine_relu_caches[i - 1])
+            loss += 0.5 * self.reg * np.square(self.params[w_key]).sum()
+            grads[w_key] += self.reg * self.params[w_key]
             grad_right = grad_left
         ############################################################################
         #                             END OF YOUR CODE                             #
