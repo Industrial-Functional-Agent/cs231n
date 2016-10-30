@@ -284,7 +284,7 @@ def batchnorm_backward_alt(dout, cache):
   dx = 1. / np.sqrt(cache['var'] + cache['eps']) * \
     (-np.average(dnorm_x, axis=0) + \
     np.average(dnorm_x * cache['norm_x'], axis=0) * -cache['norm_x'] + \
-    dnorm_x)
+    dnorm_x)  
   dgamma = np.sum(dout * cache['norm_x'], axis=0)
   dbeta = np.sum(dout, axis=0)
   #############################################################################
@@ -325,7 +325,8 @@ def dropout_forward(x, dropout_param):
     # TODO: Implement the training phase forward pass for inverted dropout.   #
     # Store the dropout mask in the mask variable.                            #
     ###########################################################################
-    pass
+    mask = (np.random.rand(*x.shape) > p) / (1 - p)
+    out = x * mask  # drop the half
     ###########################################################################
     #                            END OF YOUR CODE                             #
     ###########################################################################
@@ -333,7 +334,7 @@ def dropout_forward(x, dropout_param):
     ###########################################################################
     # TODO: Implement the test phase forward pass for inverted dropout.       #
     ###########################################################################
-    pass
+    out = x # we don't drop test phase
     ###########################################################################
     #                            END OF YOUR CODE                             #
     ###########################################################################
@@ -360,7 +361,7 @@ def dropout_backward(dout, cache):
     ###########################################################################
     # TODO: Implement the training phase backward pass for inverted dropout.  #
     ###########################################################################
-    pass
+    dx = dout * mask # drop the half
     ###########################################################################
     #                            END OF YOUR CODE                             #
     ###########################################################################
