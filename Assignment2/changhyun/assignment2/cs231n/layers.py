@@ -177,11 +177,11 @@ def batchnorm_forward(x, gamma, beta, bn_param):
         #############################################################################
         sample_mean = x.mean(axis=0)
         sample_var = x.var(axis=0)
+        middle = (x - sample_mean) / np.sqrt(sample_var + eps)
+        out = gamma * middle + beta
+        cache = (x, sample_mean, sample_var, eps, middle, gamma, beta)
         running_mean = momentum * running_mean + (1 - momentum) * sample_mean
         running_var = momentum * running_var + (1 - momentum) * sample_var
-        middle = (x - running_mean) / np.sqrt(running_var + eps)
-        out = gamma * middle + beta
-        cache = (x, momentum, running_mean, running_var, eps, middle, gamma, beta)
         #############################################################################
         #                             END OF YOUR CODE                              #
         #############################################################################
@@ -193,7 +193,7 @@ def batchnorm_forward(x, gamma, beta, bn_param):
         # the out variable.                                                         #
         #############################################################################
         middle = (x - running_mean) / np.sqrt(running_var + eps)
-        out = gamma * out + beta
+        out = gamma * middle + beta
         #############################################################################
         #                             END OF YOUR CODE                              #
         #############################################################################
@@ -229,17 +229,27 @@ def batchnorm_backward(dout, cache):
     # TODO: Implement the backward pass for batch normalization. Store the      #
     # results in the dx, dgamma, and dbeta variables.                           #
     #############################################################################
-    x, momentum, mean, var, eps, middle, gamma, beta = cache
+    x, mean, var, eps, middle, gamma, beta = cache
+    #############################################################################
+    #     mean ________   gamma___
+    #   /      \       \          \
+    # x  ------- var --- middle --- out
+    #   \______________/          /
+    #                     beta___/
+    #############################################################################
     dgamma = np.multiply(dout, middle).sum(axis=0)
     dbeta = dout.sum(axis=0)
     dmiddle = gamma * dout  # middle = running_mean / running_var 로 normalize 후 data
-    dx = np.divide(dmiddle , np.sqrt(var + eps))
-    dmean = np.divide(-dmiddle, np.sqrt(var + eps)).sum(axis=0)
     dvar = -np.multiply(dmiddle, (x - mean)) * 0.5
     dvar = np.multiply(dvar, np.divide(1, np.power(var + eps, 1.5)))
     dvar = dvar.sum(axis=0)
-    dx += dmean * (1 - momentum) / x.shape[0]
-    dx += dvar * (1 - momentum) * (2 / x.shape[0]) * x
+    dx = np.divide(dmiddle, np.sqrt(var + eps))
+
+    dmean = np.divide(-dmiddle, np.sqrt(var + eps)).sum(axis=0)
+    dmean += -2 * np.multiply(mean, dvar)
+
+    dx += dmean / x.shape[0]
+    dx += dvar * (2. / x.shape[0]) * x
     #############################################################################
     #                             END OF YOUR CODE                              #
     #############################################################################
@@ -269,7 +279,16 @@ def batchnorm_backward_alt(dout, cache):
     # should be able to compute gradients with respect to the inputs in a       #
     # single statement; our implementation fits on a single 80-character line.  #
     #############################################################################
-    pass
+    x, mean, var, eps, middle, gamma, beta = cache
+    # out = gamma * middle + beta
+    # middle =
+    std = np.sqrt(var + eps)
+    N, D = x.shape
+    dmean = 1 / N * np.ones_like(x)  # dmean / dx
+    dvar = 2 * x / N - 2 * mean * dmean  # dvar / dx
+    dx = np.divide((1 - dmean) * std - (x - mean) * 0.5 * dvar / std, var + eps) * gamma * dout
+    dgamma = np.multiply(dout, middle).sum(axis=0)
+    dbeta = dout.sum(axis=0)
     #############################################################################
     #                             END OF YOUR CODE                              #
     #############################################################################

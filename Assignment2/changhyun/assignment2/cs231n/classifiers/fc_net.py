@@ -177,6 +177,9 @@ class FullyConnectedNet(object):
         for row_size, col_size in zip(total_layer_dims, total_layer_dims[1:]):
             self.params['W' + str(idx)] = weight_scale * np.random.randn(row_size, col_size)  # 'W1'
             self.params['b' + str(idx)] = np.zeros(col_size)  # 'b1'
+            if self.use_batchnorm and idx < self.num_layers:
+                self.params['gamma' + str(idx)] = np.ones(col_size)  # 'gamma1'
+                self.params['beta' + str(idx)] = np.zeros(col_size)  # 'beta1'
             idx += 1
         ############################################################################
         #                             END OF YOUR CODE                             #
@@ -236,14 +239,22 @@ class FullyConnectedNet(object):
         ############################################################################
         # hidden_dims 만큼은 affine_relu, 그 후 한번 affine 추가
         layer_in = X
-        affine_relu_caches = []
-        for i in range(1, self.num_layers):
-            w_key, b_key = 'W' + str(i), 'b' + str(i)
-            layer_out, affine_relu_cache = affine_relu_forward(layer_in, self.params[w_key], self.params[b_key])
+        caches = []
+        for i in range(self.num_layers - 1):
+            w = self.params['W' + str(i + 1)]
+            b = self.params['b' + str(i + 1)]
+            if self.use_batchnorm:
+                gamma = self.params['gamma' + str(i + 1)]
+                beta = self.params['beta' + str(i + 1)]
+                bn_param = self.bn_params[i]
+                layer_out, cache = affine_batchnorm_relu_forward(layer_in, w, b, gamma, beta, bn_param)
+            else:
+                layer_out, cache = affine_relu_forward(layer_in, w, b)
             layer_in = layer_out
-            affine_relu_caches.append(affine_relu_cache)
-        w_key, b_key = 'W' + str(self.num_layers), 'b' + str(self.num_layers)
-        scores, last_affine_cache = affine_forward(layer_in, self.params[w_key], self.params[b_key])
+            caches.append(cache)
+        w = self.params['W' + str(self.num_layers)]
+        b = self.params['b' + str(self.num_layers)]
+        scores, last_affine_cache = affine_forward(layer_in, w, b)
         ############################################################################
         #                             END OF YOUR CODE                             #
         ############################################################################
@@ -269,13 +280,17 @@ class FullyConnectedNet(object):
         # 'test' mode 인 경우는 이미 호출이 끝났다.
         # 'train' mode 이므로 y != None 이어야 할 것이다. 귀찮아서 예외처리는 일단 패스!
         loss, dscores = softmax_loss(scores, y)
-        w_key, b_key = 'W' + str(self.num_layers), 'b' + str(self.num_layers)
-        grad_right, grads[w_key], grads[b_key] = affine_backward(dscores, last_affine_cache)
-        loss += 0.5 * self.reg * np.square(self.params[w_key]).sum()
-        grads[w_key] += self.reg * self.params[w_key]
+        w = self.params['W' + str(self.num_layers)]
+        grad_right, grads['W' + str(self.num_layers)], grads['b' + str(self.num_layers)] = affine_backward(dscores, last_affine_cache)
+        loss += 0.5 * self.reg * np.square(w).sum()
+        grads['W' + str(self.num_layers)] += self.reg * w
         for i in reversed(range(1, self.num_layers)):
             w_key, b_key = 'W' + str(i), 'b' + str(i)
-            grad_left, grads[w_key], grads[b_key] = affine_relu_backward(grad_right, affine_relu_caches[i - 1])
+            gamma_key, beta_key = 'gamma' + str(i), 'beta' + str(i)
+            if self.use_batchnorm:
+                grad_left, grads[w_key], grads[b_key], grads[gamma_key], grads[beta_key] = affine_batchnorm_relu_backward(grad_right, caches[i - 1])
+            else:
+                grad_left, grads[w_key], grads[b_key] = affine_relu_backward(grad_right, caches[i - 1])
             loss += 0.5 * self.reg * np.square(self.params[w_key]).sum()
             grads[w_key] += self.reg * self.params[w_key]
             grad_right = grad_left

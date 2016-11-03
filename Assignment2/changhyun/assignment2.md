@@ -27,3 +27,5 @@ def layer_backward(dout, cache):
 - learning_rate (solver) 
 
 당장에 reg 랑 learning_rate 만 적절히 조절해서 목표로 했던 val accuracy 50% 를 달성할 수 있었다. epoch 에 대한 accuracy 그래프를 보고 수렴이 될 된것 같으면 learning_rate 를 키우고, 중간에 loss 가 nan 이 뜨면 learning_rate 를 낮춘다. 그리고 training 과 validation 의 차이가 커보인다면 reg 값을 키운다.
+## Dropout
+randomly setting some features to zero during the **forward pass**.

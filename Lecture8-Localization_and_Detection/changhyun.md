@@ -1,36 +1,31 @@
-#### single object
-* classification
-* classification + localization
-
-#### multiple object
-* object detection
-* ~~instance segmentation~~ (얘는 다루지 않음!)
+## Computer Vision Tasks
+#### Classification
+We have stuided so far. 
+#### Classification + Localization
+Again, this problem is for **single object**. Find and localize a object in input image, and classify it in given classes label. Localization can be represented as **4 numbers** composing rectangular box.
+#### Object Detection
+Object detections is a **multiple objects version** of classification + localization problem. Even though problem looks similar, detail of implementations are much different.
+#### Instance Segmentation
+It's not covered in this lecture.
 
 ## Localization as Regression
-* Box Coordinate (4 numbers) 를 네트워크의 output 으로 한다. 
-* Loss = output 과 correct output 사이의 L2 distance
+* **Output:** box coordinate (4 numbers) define rectangle.
+* **Evaluation metric:** intersection over union.
 
-### step 1: Train (or download) a classification model
-트레이닝 된 상태로 받아오나?
-### step 2: Attach new fully connected "regression head" to the network
-~~어디에 붙이지?~~
-* After conv layers : Overfeat, VGG
-* After last FC layer(=score function 직전) : DeepPose, R-CNN
+#### Step 1: Train (or download) a classification model
+For example, VGG, GoogLeNet, and ResNet can be used.
+#### Step 2: Attach new fully connected "regression head" to the network
+**Overfeat** and **VGG** attaches regression head after last conv layer. Otherwise, **DeepPose** and **R-CNN** attaches regression head after last fully connected layer.
 
-어쨌든 regression head 도 FC layer + classifier 로 구성된다.
+Regression head is also composed of FC layers and classifier. It can be divided into **class agnostic** head and **class specific** head. In formal, regression head produces **one box** (4 numbers) for best-fit class. In latter, head produces **C boxes** (C x 4 numbers) for each classes.
 
-* classification head : C numbers
-* class agnostic : 4 numbers (one box)
-* class specific : C x 4 numbers (one box per class)
+If we want exactly **K boxes**, then we set regression head to produces exactly K x 4 numbers. Human pose estimation can be a good example. We can interpret each human body's joint as a rectangle (one for left arm, another for right arm ...).
 
-만약 K 개의 object 를 localization 하고 싶다면, regression head 가 K x 4 numbers 를 내뱉는다고 한다. Human Pose Estimation 이 그 예이다. Human Pose 를 K 개의 직사각형으로 나눠서 각각을 joint 로 표현하기에 좋다.
+Regrssion result can be in the outside of input image.
 
-regression 결과, number 가 이미지 밖으로 빠져나갈 수도 있음에 유의하자~
-
-### step 3: Train the regression head only with SGD and L2 loss
-regression head 앞부분도 트레이닝 시키나?
-### step 4: At test time, use both heads
-그렇겠지
+#### Step 3: Train the regression head only with SGD and L2 loss
+For a given CNN, we can **fine tune** it depends on amount of training dataset for localization problem.
+#### Step 4: At test time, use both heads
  
 ## Sliding Window
 ILSVRC 우승을 위해서는, 위의 일반론적인 방법외에 특별한 것들이 더 필요했다! 하지만 내용이 쉽다! (학생들에게 프로젝트에 사용해볼 수 있을거라 안내함)
@@ -39,25 +34,22 @@ ILSVRC 우승을 위해서는, 위의 일반론적인 방법외에 특별한 것
 * Combine classifier and regressor predictions **across all scales** for final prediction
 
 ### Overfeat (2013 winner)
-![overfeat sliding window](1-overfeat.png)
-
-(왜 그런 상황이 발생하는지는 모르겠는데.... classification 이랑 detection 이랑 data set 이 다른가?) 네트워크 input 에 비해서 큰 이미지를 detect 해야하는 경우를 소개했다. 예를 들어 네트워크 input 은 **3 x 221 x 221** 인데, data 가 **3 x 257 x 257** 인 경우다.
-
-이 경우 네트워크 input 크기의 sub-image 들을 생각해볼 수 있다. 간단하게 생각해보면, data 의 좌상단/우상단/좌하단/우하단 네 귀퉁이에 input 크기의 직사각형을 생각하는 것이다. 각각의 sub-image 에 대해서 regression head 랑 classification head 를 돌려서 box coordinate 랑 score 를 얻을 수 있다. 여러쌍의 결과를 **"greedy merge boxes and scores"** 해서 하나의 결과를 얻을 수 있다. [detail in paper](https://arxiv.org/pdf/1312.6229v4.pdf) 라고 한다.
-
-(논문을 좀 읽다보니, 단순히 네 귀퉁이를 보는게 아닌것 같다. 수업 내용을 잘못 이해한듯)
-
 ![overfeat sliding window (effective)](2-overfeat-effective.jpg)
 
-FC layer 대신에 CONV layer 를 사용하면 더 effective 한 계산이 가능하다. training time 과 test time 의 이미지 크기가 달라지는 설명이 있는데, 무슨 얘기인지 잘 모르겠다. 논문을 정독하고 제대로 파볼까 싶다가도, 2014년도 얘기니까 굳이 봐야하나 싶기도 하고...
+In sliding window technique, **multiple scale** of input image are prepared. Therefore, each scaled image can be bigger than network input size. Then, we treat network input size as a sliding window's size, then slide over whole scaled input image, and get multiple set of results(score and box coordinates). **Overfeat** apply technique called **greedy merge boxes and scores** to set of results to get final single score and box coordinates for input image. Detail of this technique can be found in [original paper](https://arxiv.org/pdf/1312.6229v4.pdf)
+
+Computation can be more effective by replacing FC layer to CONV layer. For big image with mulitple windows, convolution computation can be shared among shared region of windows.
+(그림 그리면 좋을듯) 
 
 ### Record
-**AlexNet (2012):** No publication, **34.2%**
-**Overfeat (2013):** Multi scale convolutional regression with box merging, **29.9%**
-**VGG (2014):** (이 부분은 GoogLeNet 을 이겼군) Overfeat 과 동일한데, scale/location 개수는 더 적고, simpler method 이다. 다만 deeper network 이기 때문에 성능 좋아짐!, **25.3%**
-**ResNet (2015):** RPN 이라는 다른 localization method 를 사용하고, much deeper feature!, **9%** (ㅎㄷㄷ)
+|Year|Network|Descriptoion|Performance|
+|:---|:-------|:-----------------------------------------------------------|-----|
+|2012|AlexNet |No publication                                              |34.2%|
+|2013|Overfeat|Multi scale convolutional regression with box merging       |29.9%|
+|2014|VGGNet  |Fewer scales/locations, simpler method, but deepter network.|25.3%|
+|2015|ResNet  |Use RPN localization method, much deeper network.           |9%   |
 
-VGGNet 은 처음까지 back-prop 했고, 어떤 네트워크는 regression head 만 back-prop 한 경우도 있다. head 별로 아예 네트워크를 분리한 경우도 있었다.
+VGGNet back-propagate to the head, and other networks only back-propagate regression head. Some networks entirely divide classification and regression head into different networks
 
 ## Object Detection: Detection as Classification
 object detection 을 regression 으로 접근하려면 난감하다. 몇개의 object 가 있을지 모르므로, output 이 가변적이기 때문이다. object 개수 x 4 numbers 를 output 으로 뽑아내야 box coordinate 를 구성할 수 있고, 그래야 score 를 뽑아낼 수 있다.
@@ -124,7 +116,3 @@ offset 을 4 numbers 로 regression 한다. (0, 0, 0, 0) 이면 제일 좋고, �
 (아마 사진에 여러 object 들을 각각 localization 해야할 것이다)
 
 61 페이지까지 봤는데..... 힘들군.
-
-
-
-
