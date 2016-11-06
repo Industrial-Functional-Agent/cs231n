@@ -1,5 +1,5 @@
 import numpy as np
-
+from cs231n.im2col import *
 
 def affine_forward(x, w, b):
   """
@@ -393,12 +393,37 @@ def conv_forward_naive(x, w, b, conv_param):
     W' = 1 + (W + 2 * pad - WW) / stride
   - cache: (x, w, b, conv_param)
   """
+  stride = conv_param['stride']
+  pad = conv_param['pad']
   out = None
   #############################################################################
   # TODO: Implement the convolutional forward pass.                           #
   # Hint: you can use the function np.pad for padding.                        #
   #############################################################################
-  pass
+  (N, C, H, W) = x.shape
+  (F, C, HH, WW) = w.shape
+  
+  # Add zero padding
+  # npad = ((0,0), (0,0), (pad,pad), (pad,pad))
+  # x_padded = np.pad(x, pad_width=npad, mode='constant', constant_values=0)
+  
+  # The local regions in the input image are stretched out into columns
+  w_raw = np.reshape(w, (F, C * HH * WW))
+  x_col = im2col_indices(x, HH, WW, pad, stride)
+    
+  # H', W'
+  new_H = 1 + (H + 2 * pad - HH) / stride
+  new_W = 1 + (W + 2 * pad - WW) / stride
+
+  # convolve
+  temp = np.dot(w_raw, x_col)
+  
+  # add bias
+  temp += b.reshape(F, 1)
+  temp = temp.reshape(F, new_H, new_W, N)
+
+  # get out
+  out = temp.transpose(3, 0, 1, 2)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -423,7 +448,35 @@ def conv_backward_naive(dout, cache):
   #############################################################################
   # TODO: Implement the convolutional backward pass.                          #
   #############################################################################
-  pass
+  (x, w, b, conv_param) = cache
+  (N, C, H, W) = x.shape
+  (F, C, HH, WW) = w.shape
+
+  # get stride and pad
+  stride = conv_param['stride']
+  pad = conv_param['pad']
+
+  # The local regions in the input image are stretched out into columns
+  w_raw = np.reshape(w, (F, C * HH * WW))
+  x_col = im2col_indices(x, HH, WW, pad, stride)
+    
+  # H', W'
+  new_H = 1 + (H + 2 * pad - HH) / stride
+  new_W = 1 + (W + 2 * pad - WW) / stride
+    
+  # get db
+  db = np.sum(dout, axis=(0, 2, 3))
+
+  # get dtemp
+  dtemp = dout.transpose(1, 2, 3, 0)
+  dtemp = dtemp.reshape(F, -1)
+    
+  # get dx_col and dx
+  dx_col = np.dot(w_raw.T, dtemp).reshape(C * HH * WW, new_H * new_W, N)
+  dx = col2im_indices(dx_col, x.shape, HH, WW, pad, stride)
+
+  # get dw
+  dw = np.dot(dtemp, x_col.reshape(C * HH * WW, -1).T).reshape(F, C, HH, WW)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -449,7 +502,24 @@ def max_pool_forward_naive(x, pool_param):
   #############################################################################
   # TODO: Implement the max pooling forward pass                              #
   #############################################################################
-  pass
+  (N, C, H, W) = x.shape
+  
+  # get pool constraint  
+  pool_height = pool_param['pool_height']
+  pool_width = pool_param['pool_width']
+  stride = pool_param['stride']
+  pad = 0
+    
+  x_col = im2col_indices(x, pool_height, pool_width, pad, stride)
+  x_col = x_col.reshape(C, pool_height * pool_width, -1)
+  x_col = np.amax(x_col, axis=1)
+
+  # H', W'
+  new_H = 1 + (H + 2 * pad - pool_height) / stride
+  new_W = 1 + (W + 2 * pad - pool_width) / stride
+    
+  # get out  
+  out = x_col.reshape(C, new_H, new_W, N).transpose(3, 0, 1, 2)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -472,7 +542,38 @@ def max_pool_backward_naive(dout, cache):
   #############################################################################
   # TODO: Implement the max pooling backward pass                             #
   #############################################################################
-  pass
+  (x, pool_param) = cache
+  (N, C, H, W) = x.shape
+  
+  # get pool constraint  
+  pool_height = pool_param['pool_height']
+  pool_width = pool_param['pool_width']
+  stride = pool_param['stride']
+  pad = 0  
+
+  # HH, WW
+  HH = pool_height
+  WW = pool_width
+    
+  # H', W'
+  new_H = 1 + (H + 2 * pad - pool_height) / stride
+  new_W = 1 + (W + 2 * pad - pool_width) / stride
+
+  dout_reshaped = dout.transpose(1, 2, 3, 0).reshape(C, -1) # (C, new_H * new_W * N)
+  dout_reshaped = np.transpose(dout_reshaped, (1, 0)).flatten() # (new_H * new_W * N * C)
+    
+  # (C , HH * WW, new_H * new_W * N)  
+  x_col = im2col_indices(x, pool_height, pool_width, pad, stride).reshape(C, HH * WW, -1)
+  # (HH * WW, new_H * new_W * N * C)
+  x_col = np.transpose(x_col, (1, 2, 0)).reshape(HH * WW, new_H * new_W * N * C)
+  x_col_argmax = np.argmax(x_col, axis=0)
+    
+  dx_col = np.zeros_like(x_col)
+  dx_col[x_col_argmax, np.arange(dx_col.shape[1])] = dout_reshaped
+  
+  # get dx  
+  dx_col = np.transpose(dx_col.reshape(HH * WW, new_H * new_W * N, C), (2, 0, 1)).reshape(C * HH * WW, -1)
+  dx = col2im_indices(dx_col, x.shape, pool_height, pool_width, pad, stride)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
