@@ -308,10 +308,10 @@ class FullyConnectedNet(object):
     # of 0.5 to simplify the expression for the gradient.                      #
     ############################################################################
     loss, dout_last = softmax_loss(out, y)
+    # add regularization factor
     for x in xrange(self.num_layers):
-        loss += 0.5 * self.reg * np.sum(np.square(self.params['W%d' % (x + 1)]))
+        loss += 0.5 * self.reg * np.sum(np.square(self.params['W%d' % (x + 1)])) 
 
-    
     dout_temp, w_grads, b_grads = affine_backward(dout_last, cache)
     dout = {}
     dout['dout%d' % (self.num_layers - 1)] = dout_temp
@@ -322,10 +322,11 @@ class FullyConnectedNet(object):
         dout_past = dout['dout%d' % (self.num_layers - x - 1)]
         cache_past = hidden_state['cache%d' % (self.num_layers - x - 1)]
         
+        # use dropout
         if self.use_dropout:
             dout_past = dropout_backward(dout_past,
                         hidden_state['dropout_cache%d' % (self.num_layers - x - 1)])
-        
+        # use batchnorm
         if self.use_batchnorm:  
             dout_temp, w_grads, b_grads, gamma_grads, beta_grads = \
                             affine_batch_relu_backward(dout_past, cache_past)
@@ -334,8 +335,9 @@ class FullyConnectedNet(object):
         else:
             dout_temp, w_grads, b_grads = affine_relu_backward(dout_past, cache_past)
         
-        loss += 0.5 * self.reg * np.square(self.params['W%d' % (self.num_layers - x - 1)]).sum()
         dout['dout%d' % (self.num_layers - x - 2)] = dout_temp
+        
+        # add regularization term
         grads['W%d' % (self.num_layers - x - 1)] = w_grads + self.reg * \
                                     self.params['W%d' % (self.num_layers - x - 1)]
         grads['b%d' % (self.num_layers - x - 1)] = b_grads

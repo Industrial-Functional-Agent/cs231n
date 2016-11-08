@@ -46,6 +46,7 @@ They overwhelming other machine learning algorithms even more dramatically!
 **cons** Still, it kill gradients when saturated.
 ### ReLU (Krizhevsky et al, 2012)
 = **Re**ctified **L**inear **U**nit
+
 ```python
 # it's very simple
 ReLU(x) = max(0, x)
