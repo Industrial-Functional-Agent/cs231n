@@ -243,6 +243,8 @@ class FullyConnectedNet(object):
         for i in range(self.num_layers - 1):
             w = self.params['W' + str(i + 1)]
             b = self.params['b' + str(i + 1)]
+
+            # batch normalization
             if self.use_batchnorm:
                 gamma = self.params['gamma' + str(i + 1)]
                 beta = self.params['beta' + str(i + 1)]
@@ -250,8 +252,15 @@ class FullyConnectedNet(object):
                 layer_out, cache = affine_batchnorm_relu_forward(layer_in, w, b, gamma, beta, bn_param)
             else:
                 layer_out, cache = affine_relu_forward(layer_in, w, b)
+
+            # drop-out : drop out 여부에 따라서 cache tuple 의 구성이 달라짐에 유의하자.
+            if self.use_dropout:
+                layer_out, dropout_cache = dropout_forward(layer_out, self.dropout_param)
+                cache = (cache, dropout_cache)
+
             layer_in = layer_out
             caches.append(cache)
+
         w = self.params['W' + str(self.num_layers)]
         b = self.params['b' + str(self.num_layers)]
         scores, last_affine_cache = affine_forward(layer_in, w, b)
@@ -287,10 +296,17 @@ class FullyConnectedNet(object):
         for i in reversed(range(1, self.num_layers)):
             w_key, b_key = 'W' + str(i), 'b' + str(i)
             gamma_key, beta_key = 'gamma' + str(i), 'beta' + str(i)
+
+            if self.use_dropout:
+                except_dropout_cache, dropout_cache = caches[i - 1]
+                grad_right = dropout_backward(grad_right, dropout_cache)
+                caches[i - 1] = except_dropout_cache
+
             if self.use_batchnorm:
                 grad_left, grads[w_key], grads[b_key], grads[gamma_key], grads[beta_key] = affine_batchnorm_relu_backward(grad_right, caches[i - 1])
             else:
                 grad_left, grads[w_key], grads[b_key] = affine_relu_backward(grad_right, caches[i - 1])
+
             loss += 0.5 * self.reg * np.square(self.params[w_key]).sum()
             grads[w_key] += self.reg * self.params[w_key]
             grad_right = grad_left

@@ -1,10 +1,5 @@
-def sum(x, a1, b1, c1):
-    return x + a1 + b1 + c1
+my_tuple = (1, 2, 3)
+packed_tuple = (my_tuple, 4)
+unpacked_tuple, added = packed_tuple
+print(unpacked_tuple)
 
-if __name__ == '__main__':
-    x = 0
-    a1 = 1
-    b1 = 2
-    c1 = 3
-    f = lambda a: sum(x, a1, b1, c1)
-    print(f(10000))
