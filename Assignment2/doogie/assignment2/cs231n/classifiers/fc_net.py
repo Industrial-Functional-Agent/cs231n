@@ -120,12 +120,12 @@ class FullyConnectedNet(object):
   ReLU nonlinearities, and a softmax loss function. This will also implement
   dropout and batch normalization as options. For a network with L layers,
   the architecture will be
-  
+
   {affine - [batch norm] - relu - [dropout]} x (L - 1) - affine - softmax
-  
+
   where batch normalization and dropout are optional, and the {...} block is
   repeated L - 1 times.
-  
+
   Similar to the TwoLayerNet above, learnable parameters are stored in the
   self.params dictionary and will be learned using the Solver class.
   """
@@ -135,7 +135,7 @@ class FullyConnectedNet(object):
                weight_scale=1e-2, dtype=np.float32, seed=None):
     """
     Initialize a new FullyConnectedNet.
-    
+
     Inputs:
     - hidden_dims: A list of integers giving the size of each hidden layer.
     - input_dim: An integer giving the size of the input.
@@ -199,7 +199,7 @@ class FullyConnectedNet(object):
       self.dropout_param = {'mode': 'train', 'p': dropout}
       if seed is not None:
         self.dropout_param['seed'] = seed
-    
+
     # With batch normalization we need to keep track of running means and
     # variances, so we need to pass a special bn_param object to each batch
     # normalization layer. You should pass self.bn_params[0] to the forward pass
@@ -208,7 +208,7 @@ class FullyConnectedNet(object):
     self.bn_params = []
     if self.use_batchnorm:
       self.bn_params = [{'mode': 'train'} for i in xrange(self.num_layers - 1)]
-    
+
     # Cast all parameters to the correct datatype
     for k, v in self.params.iteritems():
       self.params[k] = v.astype(dtype)
@@ -226,7 +226,7 @@ class FullyConnectedNet(object):
     # Set train/test mode for batchnorm params and dropout param since they
     # behave differently during training and testing.
     if self.dropout_param is not None:
-      self.dropout_param['mode'] = mode   
+      self.dropout_param['mode'] = mode
     if self.use_batchnorm:
       for bn_param in self.bn_params:
         bn_param[mode] = mode
@@ -253,7 +253,7 @@ class FullyConnectedNet(object):
     else:
         hidden_state['out1'], hidden_state['cache1'] = affine_relu_forward(X,
                                               self.params['W1'], self.params['b1'])
-        
+
     if self.use_dropout:
         hidden_state['out1'], hidden_state['dropout_cache1'] = \
                     dropout_forward(hidden_state['out1'], self.dropout_param)
@@ -264,24 +264,24 @@ class FullyConnectedNet(object):
         if self.use_batchnorm:
             gamma = self.params['gamma%d' % (x + 2)]
             beta = self.params['beta%d' % (x + 2)]
-            out, cache = affine_batch_relu_forward(past_out, weight, bias, 
+            out, cache = affine_batch_relu_forward(past_out, weight, bias,
                                                gamma, beta, self.bn_params[x + 1])
         else:
             out, cache = affine_relu_forward(past_out, weight, bias)
-        
+
         if self.use_dropout:
             out, hidden_state['dropout_cache%d' % (x + 2)] = dropout_forward(out,
                                                                  self.dropout_param)
-            
+
         hidden_state['out%d' % (x + 2)] = out
         hidden_state['cache%d' % (x + 2)] = cache
-        
-        
+
+
     weight = self.params['W%d' % (self.num_layers)]
     bias = self.params['b%d' % (self.num_layers)]
     past_out = hidden_state['out%d' % (self.num_layers - 1)]
     out, cache = affine_forward(past_out, weight, bias)
-    
+
     hidden_state['out%d' % (self.num_layers)] = out
     hidden_state['cache%d' % (self.num_layers)] = cache
     scores = out
@@ -310,7 +310,7 @@ class FullyConnectedNet(object):
     loss, dout_last = softmax_loss(out, y)
     # add regularization factor
     for x in xrange(self.num_layers):
-        loss += 0.5 * self.reg * np.sum(np.square(self.params['W%d' % (x + 1)])) 
+        loss += 0.5 * self.reg * np.sum(np.square(self.params['W%d' % (x + 1)]))
 
     dout_temp, w_grads, b_grads = affine_backward(dout_last, cache)
     dout = {}
@@ -321,22 +321,22 @@ class FullyConnectedNet(object):
     for x in xrange(self.num_layers - 1):
         dout_past = dout['dout%d' % (self.num_layers - x - 1)]
         cache_past = hidden_state['cache%d' % (self.num_layers - x - 1)]
-        
+
         # use dropout
         if self.use_dropout:
             dout_past = dropout_backward(dout_past,
                         hidden_state['dropout_cache%d' % (self.num_layers - x - 1)])
         # use batchnorm
-        if self.use_batchnorm:  
+        if self.use_batchnorm:
             dout_temp, w_grads, b_grads, gamma_grads, beta_grads = \
                             affine_batch_relu_backward(dout_past, cache_past)
             grads['gamma%d' % (self.num_layers - x - 1)] = gamma_grads
             grads['beta%d' % (self.num_layers - x - 1)] = beta_grads
         else:
             dout_temp, w_grads, b_grads = affine_relu_backward(dout_past, cache_past)
-        
+
         dout['dout%d' % (self.num_layers - x - 2)] = dout_temp
-        
+
         # add regularization term
         grads['W%d' % (self.num_layers - x - 1)] = w_grads + self.reg * \
                                     self.params['W%d' % (self.num_layers - x - 1)]
@@ -346,36 +346,3 @@ class FullyConnectedNet(object):
     ############################################################################
 
     return loss, grads
-
-
-
-def affine_batch_relu_forward(x, w, b, gamma, beta, bn_param):
-  """
-  Convenience layer that perorms an affine transform followed by batch normalization followed by a ReLU
-
-  Inputs:
-  - x: Input to the affine layer
-  - w, b: Weights for the affine layer
-  - gamma, beta, bn_prarm: Parameter for the batch normalization
-
-  Returns a tuple of:
-  - out: Output from the ReLU
-  - cache: Object to give to the backward pass
-  """
-  fc_out, fc_cache = affine_forward(x, w, b)
-  batch_out, batch_cache = batchnorm_forward(fc_out, gamma, beta, bn_param)
-  relu_out, relu_cache = relu_forward(batch_out)
-  cache = (fc_cache, batch_cache, relu_cache)
-  return relu_out, cache
-
-    
-
-def affine_batch_relu_backward(dout, cache):
-  """
-  Backward pass for the affine-batch_relu convenience layer
-  """
-  fc_cache, batch_cache, relu_cache = cache
-  dbatch_out = relu_backward(dout, relu_cache)
-  dfc_out, dgamma, dbeta = batchnorm_backward_alt(dbatch_out, batch_cache)
-  dx, dw, db = affine_backward(dfc_out, fc_cache)
-  return dx, dw, db, dgamma, dbeta
