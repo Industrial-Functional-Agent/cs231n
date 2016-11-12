@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b17a35b9-8257-45a3-a380-e52a56bbdf36" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../../Lecture6-Training_Neural_Networks2/Readme.md" afterPath="$PROJECT_DIR$/../../../Lecture6-Training_Neural_Networks2/Readme.md" />
-    </list>
+    <list default="true" id="b17a35b9-8257-45a3-a380-e52a56bbdf36" name="Default" comment="" />
     <ignored path="numpy_prac.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -29,21 +27,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Practice.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Practice.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Practice.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1161">
+            <state relative-caret-position="27">
               <caret line="124" column="6" selection-start-line="124" selection-start-column="6" selection-end-line="124" selection-end-column="6" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Numpy_prac.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Numpy_prac.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Numpy_prac.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="999">
-              <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+            <state relative-caret-position="401">
+              <caret line="220" column="60" selection-start-line="220" selection-start-column="52" selection-end-line="220" selection-end-column="60" />
               <folding />
             </state>
           </provider>
@@ -91,8 +89,8 @@
   </component>
   <component name="ProjectFrameBounds">
     <option name="y" value="23" />
-    <option name="width" value="1680" />
-    <option name="height" value="963" />
+    <option name="width" value="2560" />
+    <option name="height" value="1351" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
@@ -119,6 +117,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -148,7 +147,6 @@
         </subPane>
       </pane>
       <pane id="Scope" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -488,10 +486,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1680" height="963" extended-state="6" />
+    <frame x="0" y="23" width="2560" height="1351" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10989011" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.110802226" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295063" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3283582" sideWeight="0.5050125" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -932,6 +930,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Practice.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="27">
+          <caret line="124" column="6" selection-start-line="124" selection-start-column="6" selection-end-line="124" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Scipy_prac.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3672">
@@ -944,22 +950,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Numpy_prac.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="999">
-          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Practice.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1161">
-          <caret line="124" column="6" selection-start-line="124" selection-start-column="6" selection-end-line="124" selection-end-column="6" />
+        <state relative-caret-position="401">
+          <caret line="220" column="60" selection-start-line="220" selection-start-column="52" selection-end-line="220" selection-end-column="60" />
           <folding />
         </state>
       </provider>
     </entry>
   </component>
   <component name="webServersAuthStorage">
-    <data>AAAAsJ9xqZRu6AD1FcS4RwU7X8bl0ND15LsXIEKNsQJ7R+ZeqQq+rDwiXNjiN623SoBhjdboyrYr4F0mP4uKJ6JbR9oeHZLAJ0BUKHqPCcc0HL4JqXmPGyvUivInifBG7oNKEkhDqQ2jxWTO6fiYOI1GknfRAqaeeNr8pf4qwERz5NZX+HNBN1e/xIqf6PHksfw/+Wi47fOkl5l0q+50MEKiB5XY4buGSWS99xiS2H20yaqCIjla4W6yNvBuNXVUU0bFHg==</data>
+    <data>AAAAsN7n0WL1J524lUKZtW7mqjqyiNiFZWZIsa1uz1a+8qnNcQnSzHMQ2HC34JYnnqNWJCRMArzAdlsMW8G61WQjfAo8GNCXOGG2aavsAyAMwQBvCFGnrLPIj+F9+SvmMQq8gMjWdH23M1q8Rh4eJWKiAfnXrf4w58c3QP4xB0DjwhZgzI4jQ7BYTPtJrq1dfzDD2HEQ8p3/xYkQFv+ft86f6xItie9ErYzRInO0fKUeXiATrvNGbCAMlIUKf8n1Xl3SgA==</data>
   </component>
 </project>
