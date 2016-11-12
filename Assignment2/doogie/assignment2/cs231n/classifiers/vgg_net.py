@@ -28,7 +28,7 @@ class VGGNet(object):
   """
 
   def __init__(self, input_dim=(3, 32, 32), num_classes=10, hidden_dim=4096,
-               reg=0.0, weight_scale=1e-2, dtype=np.float32):
+               reg=0.0, dtype=np.float32):
     """
     Initialize a new VGGNet.
 
@@ -63,48 +63,48 @@ class VGGNet(object):
     # parameters should be initialized to zero.                                #
     ############################################################################
     ### Conv
-    self.params['W1'] = np.random.randn(F[0], C, HH, WW) * weight_scale
+    self.params['W1'] = np.random.randn(F[0], C, HH, WW) / np.sqrt(C / 2)
     self.params['b1'] = np.zeros(F[0])
     self.params['gamma1'] = np.ones(F[0])
     self.params['beta1'] = np.zeros(F[0])
-    self.params['W2'] = np.random.randn(F[1], F[0], HH, WW) * weight_scale
+    self.params['W2'] = np.random.randn(F[1], F[0], HH, WW) / np.sqrt(F[0] / 2)
     self.params['b2'] = np.zeros(F[1])
     self.params['gamma2'] = np.ones(F[1])
     self.params['beta2'] = np.zeros(F[1])
-    self.params['W3'] = np.random.randn(F[2], F[1], HH, WW) * weight_scale
+    self.params['W3'] = np.random.randn(F[2], F[1], HH, WW) / np.sqrt(F[1] / 2)
     self.params['b3'] = np.zeros(F[2])
     self.params['gamma3'] = np.ones(F[2])
     self.params['beta3'] = np.zeros(F[2])
-    self.params['W4'] = np.random.randn(F[3], F[2], HH, WW) * weight_scale
+    self.params['W4'] = np.random.randn(F[3], F[2], HH, WW) / np.sqrt(F[2] / 2)
     self.params['b4'] = np.zeros(F[3])
     self.params['gamma4'] = np.ones(F[3])
     self.params['beta4'] = np.zeros(F[3])
-    self.params['W5'] = np.random.randn(F[4], F[3], HH, WW) * weight_scale
+    self.params['W5'] = np.random.randn(F[4], F[3], HH, WW) / np.sqrt(F[3] / 2)
     self.params['b5'] = np.zeros(F[4])
     self.params['gamma5'] = np.ones(F[4])
     self.params['beta5'] = np.zeros(F[4])
-    self.params['W6'] = np.random.randn(F[5], F[4], HH, WW) * weight_scale
+    self.params['W6'] = np.random.randn(F[5], F[4], HH, WW) / np.sqrt(F[4] / 2)
     self.params['b6'] = np.zeros(F[5])
     self.params['gamma6'] = np.ones(F[5])
     self.params['beta6'] = np.zeros(F[5])
-    self.params['W7'] = np.random.randn(F[6], F[5], HH, WW) * weight_scale
+    self.params['W7'] = np.random.randn(F[6], F[5], HH, WW) / np.sqrt(F[5] / 2)
     self.params['b7'] = np.zeros(F[6])
     self.params['gamma7'] = np.ones(F[6])
     self.params['beta7'] = np.zeros(F[6])
-    self.params['W8'] = np.random.randn(F[7], F[6], HH, WW) * weight_scale
+    self.params['W8'] = np.random.randn(F[7], F[6], HH, WW) / np.sqrt(F[6] / 2)
     self.params['b8'] = np.zeros(F[7])
     self.params['gamma8'] = np.ones(F[7])
     self.params['beta8'] = np.zeros(F[7])
     ### FullyConnected
-    self.params['W9'] = np.random.randn(F[7] * H / 32 * W / 32, hidden_dim) * weight_scale
+    self.params['W9'] = np.random.randn(F[7] * H / 32 * W / 32, hidden_dim) / np.sqrt((F[7] * H / 32 * W / 32) / 2)
     self.params['b9'] = np.zeros(hidden_dim)
     self.params['gamma9'] = np.ones(hidden_dim)
     self.params['beta9'] = np.zeros(hidden_dim)
-    self.params['W10'] = np.random.randn(hidden_dim, hidden_dim) * weight_scale
+    self.params['W10'] = np.random.randn(hidden_dim, hidden_dim) / np.sqrt(hidden_dim / 2)
     self.params['b10'] = np.zeros(hidden_dim)
     self.params['gamma10'] = np.ones(hidden_dim)
     self.params['beta10'] = np.zeros(hidden_dim)
-    self.params['W11'] = np.random.randn(hidden_dim, num_classes) * weight_scale
+    self.params['W11'] = np.random.randn(hidden_dim, num_classes) / np.sqrt(hidden_dim / 2)
     self.params['b11'] = np.zeros(num_classes)
     ############################################################################
     #                             END OF YOUR CODE                             #
