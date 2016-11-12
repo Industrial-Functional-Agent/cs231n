@@ -52,7 +52,7 @@ class ThreeLayerConvNet(object):
     ############################################################################
     # Initialize weights and biases
     self.params['W1'] = np.random.randn(F, C, HH, WW) * weight_scale
-    self.params['b1'] = np.zeros(num_filters)
+    self.params['b1'] = np.zeros(F)
     self.params['W2'] = np.random.randn(F * H / 2 * W / 2, hidden_dim) * weight_scale
     self.params['b2'] = np.zeros(hidden_dim)
     self.params['W3'] = np.random.randn(hidden_dim, num_classes) * weight_scale
