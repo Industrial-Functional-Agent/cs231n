@@ -142,6 +142,7 @@ class VGGNet(object):
 
     def __init__(self,
                  input_dim=(3, 32, 32),
+                 fc_dim=4096,
                  num_classes=10,
                  weight_scale=1e-3,
                  reg=0.0,
@@ -176,9 +177,11 @@ class VGGNet(object):
         ############################################################################
         C, H, W = input_dim
         filter_size = 3
-        num_filters = (64, 128, 256, 256, 512, 512, 512, 512)
+        # num_filters = (64, 128, 256, 256, 512, 512, 512, 512)
+        num_filters = (16, 32, 64, 64, 128, 128, 128, 128)
         num_pool_layers = 5
 
+        print "initialization start..."
         self.params['CONV1-W'] = weight_scale * np.random.randn(num_filters[0], C, filter_size, filter_size)
         self.params['CONV1-b'] = np.zeros(num_filters[0])
         self.params['CONV2-W'] = weight_scale * np.random.randn(num_filters[1], num_filters[0], filter_size, filter_size)
@@ -196,9 +199,9 @@ class VGGNet(object):
         self.params['CONV8-W'] = weight_scale * np.random.randn(num_filters[7], num_filters[6], filter_size, filter_size)
         self.params['CONV8-b'] = np.zeros(num_filters[7])
 
-        total_pooling = pow(2, num_pool_layers)
+        total_pooling = int(pow(2, num_pool_layers))
         last_num_filters = num_filters[-1]
-        hidden_dims = (4096, 4096)
+        hidden_dims = (fc_dim, fc_dim)
         self.params['FC1-W'] = weight_scale * np.random.randn(last_num_filters * H / total_pooling * W / total_pooling, hidden_dims[0])
         self.params['FC1-b'] = np.zeros(hidden_dims[0])
         self.params['FC2-W'] = weight_scale * np.random.randn(hidden_dims[0], hidden_dims[1])
@@ -236,6 +239,12 @@ class VGGNet(object):
 
         # pass pool_param to the forward pass for the max-pooling layer
         pool_param = {'pool_height': 2, 'pool_width': 2, 'stride': 2}
+
+        # subtract mean image per channel
+        X_mean = np.mean(X, axis=(0, 2, 3))
+        X[:, 0] -= X_mean[0]
+        X[:, 1] -= X_mean[1]
+        X[:, 2] -= X_mean[2]
 
         scores = None
         ############################################################################
@@ -285,19 +294,47 @@ class VGGNet(object):
         # for self.params[k]. Don't forget to add L2 regularization!               #
         ############################################################################
         loss, dout = softmax_loss(scores, y)
-        loss += 0.5 * self.reg * np.square(self.params['W3']).sum()
-        loss += 0.5 * self.reg * np.square(self.params['W2']).sum()
-        loss += 0.5 * self.reg * np.square(self.params['W1']).sum()
+        loss += 0.5 * self.reg * np.square(self.params['FC3-W']).sum()
+        loss += 0.5 * self.reg * np.square(self.params['FC2-W']).sum()
+        loss += 0.5 * self.reg * np.square(self.params['FC1-W']).sum()
+        loss += 0.5 * self.reg * np.square(self.params['CONV8-W']).sum()
+        loss += 0.5 * self.reg * np.square(self.params['CONV7-W']).sum()
+        loss += 0.5 * self.reg * np.square(self.params['CONV6-W']).sum()
+        loss += 0.5 * self.reg * np.square(self.params['CONV5-W']).sum()
+        loss += 0.5 * self.reg * np.square(self.params['CONV4-W']).sum()
+        loss += 0.5 * self.reg * np.square(self.params['CONV3-W']).sum()
+        loss += 0.5 * self.reg * np.square(self.params['CONV2-W']).sum()
+        loss += 0.5 * self.reg * np.square(self.params['CONV1-W']).sum()
 
-        daffine, grads['W3'], grads['b3'] = affine_backward(dout, affine_cache)
-        daffine_relu, grads['W2'], grads['b2'] = affine_relu_backward(daffine, affine_relu_cache)
-        # flat ---> tensor
-        daffine_relu_reshape = np.reshape(daffine_relu, [N, F, H_half, W_half])
-        dx, grads['W1'], grads['b1'] = conv_relu_pool_backward(daffine_relu_reshape, conv_cache)
+        dfc3, grads['FC3-W'], grads['FC3-b'] = affine_backward(dout, fc_cache3)
+        dfc2, grads['FC2-W'], grads['FC2-b'] = affine_relu_backward(dfc3, fc_cache2)
+        dfc1, grads['FC1-W'], grads['FC1-b'] = affine_relu_backward(dfc2, fc_cache1)
 
-        grads['W3'] += self.reg * self.params['W3']
-        grads['W2'] += self.reg * self.params['W2']
-        grads['W1'] += self.reg * self.params['W1']
+        # CONV layer 에 진입할 때 다시 reshape 해줘야 한다.
+        dfc1_reshape = np.reshape(dfc1, [n, f, h, w])
+
+        dconv8, grads['CONV8-W'], grads['CONV8-b'] = conv_relu_pool_backward(dfc1_reshape, cache8)
+        dconv7, grads['CONV7-W'], grads['CONV7-b'] = conv_relu_backward(dconv8, cache7)
+        dconv6, grads['CONV6-W'], grads['CONV6-b'] = conv_relu_pool_backward(dconv7, cache6)
+        dconv5, grads['CONV5-W'], grads['CONV5-b'] = conv_relu_backward(dconv6, cache5)
+        dconv4, grads['CONV4-W'], grads['CONV4-b'] = conv_relu_pool_backward(dconv5, cache4)
+        dconv3, grads['CONV3-W'], grads['CONV3-b'] = conv_relu_backward(dconv4, cache3)
+
+        dconv2, grads['CONV2-W'], grads['CONV2-b'] = conv_relu_pool_backward(dconv3, cache2)
+        dconv1, grads['CONV1-W'], grads['CONV1-b'] = conv_relu_pool_backward(dconv2, cache1)
+
+        grads['FC3-W'] += self.reg * FC3_W
+        grads['FC2-W'] += self.reg * FC2_W
+        grads['FC1-W'] += self.reg * FC1_W
+
+        grads['CONV8-W'] += self.reg * CONV8_W
+        grads['CONV7-W'] += self.reg * CONV7_W
+        grads['CONV6-W'] += self.reg * CONV6_W
+        grads['CONV5-W'] += self.reg * CONV5_W
+        grads['CONV4-W'] += self.reg * CONV4_W
+        grads['CONV3-W'] += self.reg * CONV3_W
+        grads['CONV2-W'] += self.reg * CONV2_W
+        grads['CONV1-W'] += self.reg * CONV1_W
         ############################################################################
         #                             END OF YOUR CODE                             #
         ############################################################################
