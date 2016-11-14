@@ -176,27 +176,27 @@ class VGGNet(object):
         # of the output affine layer.                                              #
         ############################################################################
         C, H, W = input_dim
-        filter_size = 3
+        f_size = 3
         # num_filters = (64, 128, 256, 256, 512, 512, 512, 512)
         num_filters = (16, 32, 64, 64, 128, 128, 128, 128)
         num_pool_layers = 5
 
         print "initialization start..."
-        self.params['CONV1-W'] = weight_scale * np.random.randn(num_filters[0], C, filter_size, filter_size)
+        self.params['CONV1-W'] = np.random.randn(num_filters[0], C, f_size, f_size) / np.sqrt(C * f_size * f_size / 2)
         self.params['CONV1-b'] = np.zeros(num_filters[0])
-        self.params['CONV2-W'] = weight_scale * np.random.randn(num_filters[1], num_filters[0], filter_size, filter_size)
+        self.params['CONV2-W'] = np.random.randn(num_filters[1], num_filters[0], f_size, f_size) / np.sqrt(num_filters[0] * f_size * f_size / 2)
         self.params['CONV2-b'] = np.zeros(num_filters[1])
-        self.params['CONV3-W'] = weight_scale * np.random.randn(num_filters[2], num_filters[1], filter_size, filter_size)
+        self.params['CONV3-W'] = np.random.randn(num_filters[2], num_filters[1], f_size, f_size) / np.sqrt(num_filters[1] * f_size * f_size / 2)
         self.params['CONV3-b'] = np.zeros(num_filters[2])
-        self.params['CONV4-W'] = weight_scale * np.random.randn(num_filters[3], num_filters[2], filter_size, filter_size)
+        self.params['CONV4-W'] = np.random.randn(num_filters[3], num_filters[2], f_size, f_size) / np.sqrt(num_filters[2] * f_size * f_size / 2)
         self.params['CONV4-b'] = np.zeros(num_filters[3])
-        self.params['CONV5-W'] = weight_scale * np.random.randn(num_filters[4], num_filters[3], filter_size, filter_size)
+        self.params['CONV5-W'] = np.random.randn(num_filters[4], num_filters[3], f_size, f_size) / np.sqrt(num_filters[3] * f_size * f_size / 2)
         self.params['CONV5-b'] = np.zeros(num_filters[4])
-        self.params['CONV6-W'] = weight_scale * np.random.randn(num_filters[5], num_filters[4], filter_size, filter_size)
+        self.params['CONV6-W'] = np.random.randn(num_filters[5], num_filters[4], f_size, f_size) / np.sqrt(num_filters[4] * f_size * f_size / 2)
         self.params['CONV6-b'] = np.zeros(num_filters[5])
-        self.params['CONV7-W'] = weight_scale * np.random.randn(num_filters[6], num_filters[5], filter_size, filter_size)
+        self.params['CONV7-W'] = np.random.randn(num_filters[6], num_filters[5], f_size, f_size) / np.sqrt(num_filters[5] * f_size * f_size / 2)
         self.params['CONV7-b'] = np.zeros(num_filters[6])
-        self.params['CONV8-W'] = weight_scale * np.random.randn(num_filters[7], num_filters[6], filter_size, filter_size)
+        self.params['CONV8-W'] = np.random.randn(num_filters[7], num_filters[6], f_size, f_size) / np.sqrt(num_filters[6] * f_size * f_size / 2)
         self.params['CONV8-b'] = np.zeros(num_filters[7])
 
         self.params['BN1-g'] = np.ones(num_filters[0])
@@ -219,16 +219,18 @@ class VGGNet(object):
         total_pooling = int(pow(2, num_pool_layers))
         last_num_filters = num_filters[-1]
         hidden_dims = (fc_dim, fc_dim)
-        self.params['FC1-W'] = weight_scale * np.random.randn(last_num_filters * H / total_pooling * W / total_pooling, hidden_dims[0])
+        first_fc_input_dim = last_num_filters * H / total_pooling * W / total_pooling
+        self.params['FC1-W'] = np.random.randn(first_fc_input_dim, hidden_dims[0]) / np.sqrt(first_fc_input_dim / 2)
         self.params['FC1-b'] = np.zeros(hidden_dims[0])
+        self.params['FC2-W'] = np.random.randn(hidden_dims[0], hidden_dims[1]) / np.sqrt(hidden_dims[0] / 2)
+        self.params['FC2-b'] = np.zeros(hidden_dims[1])
+        self.params['FC3-W'] = np.random.randn(hidden_dims[1], num_classes) / np.sqrt(hidden_dims[1] / 2)
+        self.params['FC3-b'] = np.zeros(num_classes)
+
         self.params['BN9-g'] = np.ones(hidden_dims[0])
         self.params['BN9-b'] = np.zeros(hidden_dims[0])
-        self.params['FC2-W'] = weight_scale * np.random.randn(hidden_dims[0], hidden_dims[1])
-        self.params['FC2-b'] = np.zeros(hidden_dims[1])
         self.params['BN10-g'] = np.ones(hidden_dims[1])
         self.params['BN10-b'] = np.zeros(hidden_dims[1])
-        self.params['FC3-W'] = weight_scale * np.random.randn(hidden_dims[1], num_classes)
-        self.params['FC3-b'] = np.zeros(num_classes)
         ############################################################################
         #                             END OF YOUR CODE                             #
         ############################################################################
