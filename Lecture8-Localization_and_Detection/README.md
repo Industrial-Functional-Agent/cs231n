@@ -54,15 +54,19 @@ But problem is that partial regions for multi-scaled input image are too many. O
 #### step 1: Train (or download) a classification model for ImageNet
 VGGNet or ResNet are recommended.
 #### step 2: Fine-tune model for detection
-Instead of 1000 ImageNet classes, we only need 20 classes + 1 background. So, last fully-connected layer's output size should be changed(1000 -> 21). Then we reinitialize last fully-connected layer and **fine-tune**(train for small dataset) it.
+Instead of 1000 ImageNet classes, we only need 20 classes + 1 background. So, last fully-connected layer's output size should be changed(1000 -> 21). Then we reinitialize last fully-connected layer and **fine-tune**(train for small dataset) CNN.
 
-For fine-tuning, we should prepare training data. In **PASCAL VOC** dataset, each image contains multiple set of box coordinate and label. For each image, apply region proposal(selective search for R-CNN), get multiple regions and classify each region by rule. The rule is, if there is any box coordinate has IoU larger than 0.5 with partial region, classify that region as corresponding label, or as background if not. Not only label but also offset (relative size and position with box coordinate) is also saved for step 5. Those classified partial regions become traing data for reinitialized last fully connected layer.    
+For fine-tuning, we should prepare training data. In **PASCAL VOC** dataset, each image contains multiple set of **box coordinate** and **label**. For each image, apply region proposal(selective search for R-CNN), get multiple regions and classify each region by rule. The rule is, if there is any box coordinate has IoU larger than **0.5** with partial region, classify that region as corresponding label, or as background if not.     
 #### step 3: Extract features
-Extract region proposals for all images. For each region, warp to CNN inut size, run forward through CNN, and save POOL5(or layer just before FC layer) features to disk. Maybe we need a big hard drive. For example, features for **PASCAL** dataset are ~200GB.
+Extract region proposals for all images. For each region, **warp** to CNN inut size, run forward through CNN, and save **POOL5** (or layer just before FC layer) features to disk. Maybe we need a big hard drive. For example, features for PASCAL dataset are ~200GB.
 #### step 4: Train one binary SVM per class to classify region features
-#### step 5: (bbox regression) For each class, train a linear regression model to map from cached features to offsets to GT boxes to make up for "slightly wrong" proposals    
+Even though we already fine-tuned soft-max classifier (21-dimension) in step 2, we independently train one binary SVM per class on saved features in step 3. That's simply for better performance. Additionally trained SVM classifier (54.2% mAP) shows better performance than soft-max classifier (50.9% mAP) on VOC 2007.
+#### step 5: (bbox regression) For each class, train a linear regression model to map from cached features to offsets to GT boxes to make up for "slightly wrong" proposals
+Training bbox regressor also need training data. Getting training data is similar with way described in step 2. There are two differences. One is IoU threshold, use 0.6 instead of 0.5. Second is training data format, get offset (relative size and position with corresponding ground-truth box coordinate) instead of class label.
 
-But R-CNN has some problems. First, we forwarding whole CNN for each region proposal. It is slow. Second, SVM and regressor are post-hoc. They are attached after pre-trained CNN. Third, training pipeline is too complex.
+Then we can train bbox regressor with training data. Regressor attaches after POOL5 layer, and applys to pre-saved features.
+#### problem
+But R-CNN has some problems. **First**, we forwarding whole CNN for each region proposal. It is slow. **Second**, SVM and regressor are post-hoc. They are attached after pre-trained CNN. **Third**, training pipeline is too complex.
 ### Fast R-CNN
 In Fast R-CNN, we start with CNN which has input size same to image size. Region proposal technique is applied to input image. But instead of forwarding CNN for region proposal, we only pass coordinate to get corresponding projection in the output feature map of CNN. Then we get region proposals in conv feature map which passed to fully connected layer.
 #### RoI(Region of Interest) Pooling
@@ -70,7 +74,7 @@ But problem is fully connected layers expect **low resolution conv feature** and
 
 To fix second and third problems in R-CNN, we just train the whole system end-to-end all at once.
 ### Faster R-CNN
-TODO
+
 #### RPN
 TODO
 ### YOLO
