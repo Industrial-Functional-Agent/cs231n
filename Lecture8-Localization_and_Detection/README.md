@@ -74,11 +74,16 @@ But problem is fully connected layers expect **low resolution conv feature** and
 
 To fix second and third problems in R-CNN, we just train the whole system end-to-end all at once.
 ### Faster R-CNN
-
+Faster R-CNN just make the CNN do region proposals too. It insert a **Region Proposal Network** after the last convolutional layer. To generate region proposals, we slide a small network over the convolutional feature map output by the last convolutional layer.
 #### RPN
-TODO
+A Region Proposal Network takes an image (of any size) as input and outputs a set of rectangular object proposals, each with an objectness score. Let's assume that feature map has size W x H x D. RPN takes n x n planar sliding window (n=3 for paper) on feature map to get 1 x 1 x D tensor for each sliding window. Then this tensor is passed to two fully-connected layer, one is for regression and the other is for binary classification of objectness (whether it's object or not). 
+#### anchor boxes
+Then the concept of **anchor boxes** appeared. Anchor boxes are set of pre-defined box made by combination of multiple scales / multiple aspect ratios (3x3=9 boxes for paper). If we pre-defined k anchor boxes, regression head outputs 4k numbers whose coordinates are relative to each anchor box, and classification head outputs 2k scores. As we assumed that feature map has dimension of W x H x D, we may get WHk region proposals.
+
+After regions are proposed by RPN, latter processes are similar to those in Fast R-CNN. Regions are drawn on feature map, RoI are pulled, and each RoI are regressed and classified by successive networks.
 ### YOLO
 TODO
+### State-of-the-art
 ### Evaluation: mAP(mean average precision)
 #### precision / recall
 * true / false : whether guess is correct or not
