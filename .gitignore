@@ -25,7 +25,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-
 ### Windows ###
 # Windows image file caches
 Thumbs.db
@@ -191,3 +190,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+### cs231n assignment dataset
+Assignment3/changhyun/assignment3/cs231n/datasets/
