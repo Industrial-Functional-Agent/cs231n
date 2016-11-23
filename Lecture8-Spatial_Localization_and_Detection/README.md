@@ -82,9 +82,12 @@ Then the concept of **anchor boxes** appeared. Anchor boxes are set of pre-defin
 
 After regions are proposed by RPN, latter processes are similar to those in Fast R-CNN. Regions are drawn on feature map, RoI are pulled, and each RoI are regressed and classified by successive networks.
 ## YOLO
-TODO
-## State-of-the-art
-TODO
+The term YOLO stands for **"You Only Look Once"**. In contrast to R-CNN related techniques, YOLO is a kind of **detection as regression** technique.
+* Divide input image to `S x S` grid
+* Predict B Boxes (4 coordinates and confidence) and C class scores. Therefore the size of output tensor is `S x S x (5 x B + C)`.
+* Directly predict using a CNN.
+ 
+YOLO is even faster than Faster R-CNN, but not as good.
 ## Evaluation: mAP(mean average precision)
 ### precision / recall
 * true / false : whether guess is correct or not
