@@ -89,7 +89,7 @@ So, for example, you can update any input image to maximize the ostrich score of
 
 > primary cause of neural networks' vulnerability to adversarial perturbation is their **linear nature**.
 
-**Linear nature** of the functions that were used in the forward pass. Images are super high dimensional objects, lots of piexel so there is a hundred and fifty thousand dimensional space. And the real images that we actually trained on are statistical structures and they are constrained to a tiny manifold of this space. ConvNet were very well on that tiny manifold where statistics of images are image-like. But the outsides of the manifold were kind of casting shadows of complete randomness and chaos because we haven't trained there. 
+**Linear nature** of the functions that were used in the forward pass. Images are super high dimensional objects, lots of pixels so there is a hundred and fifty thousand dimensional space. And the real images that we actually trained on are statistical structures and they are constrained to a tiny manifold of this space. ConvNet were very well on that tiny manifold where statistics of images are image-like. But the outsides of the manifold were kind of casting shadows of complete randomness and chaos because we haven't trained there. 
 That is, after ConvNet is completed by searching for a very restrictive manifold in very high dimensional space, you will experience tremendous chaos in shadow that has not yet been searched (e.g. random noise).
 
 Also, since the input dimesions are so large that even very small element-wise variations are present, the sum is so large that the results are very severe. (fool binary linear classifier를 설명하긴 싫은데, 이 문장은 넣고 싶네요 ㅜㅜ 근데 뭔가 뜬금 없어 보여서 어떻게 해야 넣어야 할지 모르겠습니다.)
