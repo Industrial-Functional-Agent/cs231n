@@ -67,9 +67,23 @@ Beside basic compound model adding CNN and RNN, there can be fancier architectur
 
 In soft attention model, RNN generate not only word sequence, but also another vector which play role as **lookup key**, which has equal dimension with depth of output activation map of CNN. This lookup key computes **attention** for each pixels in activation map(e.g. dot product lookup key and each pillar of activation map, then compute softmax), which is used in computing weighted sum of activation map over pixels.
 
-### [TODO] Tasks
+### [TODO] Questions
 Several things didn't get understood yet. Discussion and studying introduced paper are needed.
 * How RNN compute lookup key in each time step?
 * How exactly "weighted sum" of activation map is computed?
 * It seems like output of CNN affects every time step of RNN, which differ with basic compound model that output of CNN affects only first hidden state of RNN in basic compound model. Then how exactly output of CNN affects components of RNN?
 
+## More Complex RNN
+### Stacked RNN
+The recursion formula of stacked RNN is exactly same with vanilla RNN's one, only representations are different. The parameter matrix `W_hx` and `W_hh` are stacked horizontaly (**n x 2n**), and two input vectors `h(l-1, t)`, `h(l, t-1)` for stacked RNN, are stacked vertically(**2n x 1**). Each network in specific depth has its own parameters, but same among time steps as original RNN is.
+
+In fact, we don't use vanilla RNN or stacked vanilla RNN in practice any more. As neural net goes deeper and more complicative, we need more advanced RNN architecture. That's why lecture lead us to **LSTM**. 
+
+### LSTM (Long Short Term Memory)
+
+* why we multiply `input` to `g` even though `g` is already between -1 and 1?
+    * It's for making adding term of cell state be richer function. `g` is tanh of linear context, and this single non-linearity may be not enough. We can understand two terms as `g` for amount, and `input` for strength of variation to cell state.
+* Be aware of that hidden state in specific time step is used both in computing next `f`, `i`, `g`, `o` and computing higher hidden state or prediction.
+* Vanilla RNN transform from hidden state to hidden state while LSTM evolve in additive manner and also forget some amount, which reminds us **ResNet**.
+    * Additive interaction works as super-fast **highway** in back-propagation.
+* Vanilla RNN has vanishing gradient problem.
